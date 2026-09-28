@@ -142,8 +142,8 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
 
         const siomayTotalLoyang = siomayRows.reduce((sum, r) => sum + (Number(r.tray_count) || 0), 0);
         const pentolTotalLoyang = pentolRows.reduce((sum, r) => sum + (Number(r.tray_count) || 0), 0);
-        const lumpiaTotalSolid = lumpiaRows.reduce((sum, r) => sum + (Number(r.tray_count) || 0), 0);
-        const adonanTotalKeranjang = adonanRows.reduce((sum, r) => sum + (Number(r.tray_count) || 0), 0);
+        const lumpiaTotalKeranjang = lumpiaRows.reduce((sum, r) => sum + (Number(r.tray_count) || 0), 0);
+        const adonanTotalSolid = adonanRows.reduce((sum, r) => sum + (Number(r.tray_count) || 0), 0);
 
         // Format to 1 decimal place if not a whole integer (e.g., 67.7 for 14 raks)
         const formatMins = (val) => {
@@ -152,14 +152,10 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
             return Number.isInteger(num) ? num.toString() : num.toFixed(1);
         };
 
-        // Waktu Sesuai Resep (Standar Resep):
-        // 1. Siomay & Pentol: (Jumlah Loyang x 13.2) / 60 menit
-        // 2. Lumpia: (Jumlah Solid x 71) / 60 menit
-        // 3. Adonan Pangsit: Jumlah Keranjang x 1.5 menit
         const siomayResepVal = (siomayTotalLoyang * 13.2) / 60;
         const pentolResepVal = (pentolTotalLoyang * 13.2) / 60;
-        const lumpiaResepVal = adonanTotalKeranjang * 1.5;
-        const adonanResepVal = (lumpiaTotalSolid * 71);
+        const lumpiaResepVal = lumpiaTotalKeranjang * 1.5;
+        const adonanResepVal = adonanTotalSolid * 71;
 
         const siomayResepMins = formatMins(siomayResepVal);
         const pentolResepMins = formatMins(pentolResepVal);
@@ -261,13 +257,13 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(SOLID X 71)/60</span> */}
+                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(KERANJANG X 1.5)</span> */}
                             <span className="text-xs font-black mt-0.5">{lumpiaResepMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">KERANJANG X 1.5</span> */}
+                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(SOLID X 71)</span> */}
                             <span className="text-xs font-black mt-0.5">{adonanResepMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
