@@ -200,7 +200,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL MENIT</span>
+                            {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL MENIT</span> */}
                             <span className="text-xs font-black mt-0.5">{totalDimsumMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
@@ -239,7 +239,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] uppercase font-extrabold tracking-tight">WAKTU RESEP</span>
+                            {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">WAKTU RESEP</span> */}
                             <span className="text-xs font-black mt-0.5">{totalResepMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
@@ -271,7 +271,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL SELISIH</span>
+                            {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL SELISIH</span> */}
                             <span className="text-xs font-black mt-0.5">{totalSelisih} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
