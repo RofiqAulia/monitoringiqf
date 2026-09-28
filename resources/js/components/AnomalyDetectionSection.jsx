@@ -155,7 +155,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
         const siomayResepVal = (siomayTotalLoyang * 13.2) / 60;
         const pentolResepVal = (pentolTotalLoyang * 13.2) / 60;
         const lumpiaResepVal = lumpiaTotalKeranjang * 1.5;
-        const adonanResepVal = adonanTotalSolid * 71;
+        const adonanResepVal = (adonanTotalSolid * 71)/60;
 
         const siomayResepMins = formatMins(siomayResepVal);
         const pentolResepMins = formatMins(pentolResepVal);
