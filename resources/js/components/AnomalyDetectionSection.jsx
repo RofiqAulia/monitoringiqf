@@ -54,6 +54,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
             downtime_minutes = 0,
             total_recorded_minutes = 0,
             target_shift_minutes = 480,
+            elapsed_shift_minutes = target_shift_minutes,
             unaccounted_minutes = 0,
             status = 'normal',
             downtime_entries = [],
@@ -349,8 +350,8 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                             <tr>
                                 <td className="bg-slate-100 font-bold px-3 py-1.5 border border-slate-900 w-1/6 text-slate-800">Mesin Production</td>
                                 <td className="font-extrabold px-3 py-1.5 border border-slate-900 w-1/3 text-slate-900">{mName}</td>
-                                <td className="bg-slate-100 font-bold px-3 py-1.5 border border-slate-900 w-1/6 text-slate-800">Target Shift</td>
-                                <td className="font-extrabold px-3 py-1.5 border border-slate-900 w-1/3 text-slate-900">{target_shift_minutes} menit</td>
+                                <td className="bg-slate-100 font-bold px-3 py-1.5 border border-slate-900 w-1/6 text-slate-800">Berjalan / Target</td>
+                                <td className="font-extrabold px-3 py-1.5 border border-slate-900 w-1/3 text-slate-900">{elapsed_shift_minutes}m / {target_shift_minutes} menit</td>
                             </tr>
                             <tr>
                                 <td className="bg-slate-100 font-bold px-3 py-1.5 border border-slate-900 text-slate-800">Total Cover</td>
@@ -386,7 +387,9 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-300 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/60">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-300 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/60 flex-wrap">
+                        <span>Berjalan: <strong className="text-cyan-300">{elapsed_shift_minutes}m</strong></span>
+                        <span className="text-slate-600">•</span>
                         <span>Target: <strong className="text-white">{target_shift_minutes}m</strong></span>
                         <span className="text-slate-600">•</span>
                         <span className="text-emerald-400">Cover: <strong className="text-emerald-300">{total_recorded_minutes}m</strong></span>
@@ -407,7 +410,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                     🛑 ANOMALI {mName}: SELISIH {unaccounted_minutes} MENIT (LOSS TIME)
                                 </h5>
                                 <p className="text-xs text-rose-800 font-medium leading-relaxed mt-0.5 mb-0">
-                                    Total input dimsum ({total_active_dimsum_mins}m) + downtime ({downtime_minutes}m) = <strong>{total_recorded_minutes}m</strong> dari target <strong>{target_shift_minutes}m</strong>.
+                                    Total input dimsum ({total_active_dimsum_mins}m) + downtime ({downtime_minutes}m) = <strong>{total_recorded_minutes}m</strong> dari <strong>{elapsed_shift_minutes}m</strong> menit berjalan shift (target full shift <strong>{target_shift_minutes}m</strong>).
                                 </p>
                             </div>
                         </div>
@@ -419,7 +422,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                     ⚠️ PERHATIAN {mName}: SELISIH {unaccounted_minutes} MENIT
                                 </h5>
                                 <p className="text-xs text-amber-800 font-medium leading-relaxed mt-0.5 mb-0">
-                                    Terdapat gap {unaccounted_minutes} menit jam kerja belum ter-log pada {mName}.
+                                    Terdapat gap {unaccounted_minutes} menit jam kerja belum ter-log dari {elapsed_shift_minutes}m menit berjalan shift pada {mName}.
                                 </p>
                             </div>
                         </div>
@@ -427,7 +430,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 px-4 flex items-center gap-2.5 text-emerald-900 web-anomaly-alert">
                             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                             <p className="text-xs font-bold m-0">
-                                ✅ Jam kerja {mName} ter-cover 100% tanpa anomali (Total {total_recorded_minutes}m).
+                                ✅ Jam kerja {mName} ter-cover 100% tanpa anomali ({total_recorded_minutes}m ter-log dari {elapsed_shift_minutes}m menit berjalan shift).
                             </p>
                         </div>
                     )}

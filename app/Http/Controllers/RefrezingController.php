@@ -425,19 +425,25 @@ class RefrezingController extends Controller
         $totalActiveDimsumMins = array_sum($activeByProduct);
         $totalRecordedMins     = $totalActiveDimsumMins + $totalDowntimeMins;
         $targetShiftMins       = $totalShiftMinutes;
-        $unaccountedMins       = max(0, $targetShiftMins - $totalRecordedMins);
+        $elapsedShiftMins      = $elapsedShiftMinutes;
+
+        $effectiveCompareMins  = ($queryDate === $todayWib && $elapsedShiftMins < $targetShiftMins)
+                                    ? $elapsedShiftMins
+                                    : $targetShiftMins;
+
+        $unaccountedMins       = max(0, $effectiveCompareMins - $totalRecordedMins);
 
         $anomalyMessages = [];
         $anomalyStatus = 'normal';
 
         if ($unaccountedMins > 30) {
             $anomalyStatus = 'anomaly';
-            $anomalyMessages[] = "Selisih {$unaccountedMins} menit belum ter-log (Loss Time / Unaccounted). Total input aktif + kendala: {$totalRecordedMins} menit dari target {$targetShiftMins} menit.";
+            $anomalyMessages[] = "Selisih {$unaccountedMins} menit belum ter-log dari {$elapsedShiftMins}m menit berjalan shift (Loss Time / Unaccounted). Total input aktif + kendala: {$totalRecordedMins}m (Target Full Shift: {$targetShiftMins}m).";
         } else if ($unaccountedMins > 0) {
             $anomalyStatus = 'warning';
-            $anomalyMessages[] = "Terdapat selisih {$unaccountedMins} menit jam kerja belum ter-log pada shift ini.";
+            $anomalyMessages[] = "Terdapat selisih {$unaccountedMins} menit jam kerja belum ter-log dari {$elapsedShiftMins}m menit berjalan shift ini.";
         } else {
-            $anomalyMessages[] = "Jam kerja shift ter-cover 100% tanpa anomali loss time.";
+            $anomalyMessages[] = "Jam kerja shift ({$elapsedShiftMins}m berjalan) ter-cover 100% tanpa anomali loss time.";
         }
 
         foreach ($unplannedStops as $stop) {
@@ -470,6 +476,7 @@ class RefrezingController extends Controller
             'downtime_minutes'          => $totalDowntimeMins,
             'total_recorded_minutes'    => $totalRecordedMins,
             'target_shift_minutes'      => $targetShiftMins,
+            'elapsed_shift_minutes'     => $elapsedShiftMins,
             'unaccounted_minutes'       => $unaccountedMins,
             'status'                    => $anomalyStatus,
             'messages'                  => $anomalyMessages,

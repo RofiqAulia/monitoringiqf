@@ -390,19 +390,25 @@ class IqfLogsheetController extends Controller
             $totalActiveDimsumMins = array_sum($activeByProduct);
             $totalRecordedMins     = $totalActiveDimsumMins + $totalDowntimeMins;
             $targetShiftMins       = $totalShiftMinutes;
-            $unaccountedMins       = max(0, $targetShiftMins - $totalRecordedMins);
+            $elapsedShiftMins      = $elapsedShiftMinutes;
+
+            $effectiveCompareMins  = ($queryDate === $todayWib && $elapsedShiftMins < $targetShiftMins)
+                                        ? $elapsedShiftMins
+                                        : $targetShiftMins;
+
+            $unaccountedMins       = max(0, $effectiveCompareMins - $totalRecordedMins);
 
             $anomalyMessages = [];
             $anomalyStatus = 'normal';
 
             if ($unaccountedMins > 30) {
                 $anomalyStatus = 'anomaly';
-                $anomalyMessages[] = "{$m}: Selisih {$unaccountedMins} menit belum ter-log (Loss Time / Unaccounted). Total input aktif + kendala: {$totalRecordedMins}m dari target {$targetShiftMins}m.";
+                $anomalyMessages[] = "{$m}: Selisih {$unaccountedMins} menit belum ter-log dari {$elapsedShiftMins}m menit berjalan shift (Loss Time / Unaccounted). Total input aktif + kendala: {$totalRecordedMins}m (Target Full Shift: {$targetShiftMins}m).";
             } else if ($unaccountedMins > 0) {
                 $anomalyStatus = 'warning';
-                $anomalyMessages[] = "{$m}: Terdapat selisih {$unaccountedMins} menit jam kerja belum ter-log pada shift ini.";
+                $anomalyMessages[] = "{$m}: Terdapat selisih {$unaccountedMins} menit jam kerja belum ter-log dari {$elapsedShiftMins}m menit berjalan shift ini.";
             } else {
-                $anomalyMessages[] = "{$m}: Jam kerja shift ter-cover 100% tanpa anomali loss time.";
+                $anomalyMessages[] = "{$m}: Jam kerja shift ({$elapsedShiftMins}m berjalan) ter-cover 100% tanpa anomali loss time.";
             }
 
             foreach ($unplannedStopsData as $stop) {
@@ -435,6 +441,7 @@ class IqfLogsheetController extends Controller
                 'downtime_minutes'          => $totalDowntimeMins,
                 'total_recorded_minutes'    => $totalRecordedMins,
                 'target_shift_minutes'      => $targetShiftMins,
+                'elapsed_shift_minutes'     => $elapsedShiftMins,
                 'unaccounted_minutes'       => $unaccountedMins,
                 'status'                    => $anomalyStatus,
                 'messages'                  => $anomalyMessages,
@@ -465,6 +472,7 @@ class IqfLogsheetController extends Controller
             'downtime_minutes'          => ($anomalyDetectionByMachine['IQF 1']['downtime_minutes'] ?? 0) + ($anomalyDetectionByMachine['IQF 2']['downtime_minutes'] ?? 0),
             'total_recorded_minutes'    => ($anomalyDetectionByMachine['IQF 1']['total_recorded_minutes'] ?? 0) + ($anomalyDetectionByMachine['IQF 2']['total_recorded_minutes'] ?? 0),
             'target_shift_minutes'      => $totalShiftMinutes,
+            'elapsed_shift_minutes'     => $elapsedShiftMinutes,
             'unaccounted_minutes'       => $overallUnaccounted,
             'status'                    => $overallStatus,
             'messages'                  => array_merge($anomalyDetectionByMachine['IQF 1']['messages'] ?? [], $anomalyDetectionByMachine['IQF 2']['messages'] ?? []),

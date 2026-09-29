@@ -252,21 +252,6 @@ export default function IqfDashboard() {
                             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
                             <span>Refresh</span>
                         </button>
-
-                        {/* Action Pill Buttons (+ Input Logsheet & Cetak Laporan) */}
-                        <a
-                            href="/logsheet-iqf"
-                            className="h-9 px-4 flex items-center justify-center gap-1.5 rounded-full bg-[#0284c7] hover:bg-cyan-700 text-white font-bold text-xs shadow-xs transition-all text-decoration-none shrink-0"
-                        >
-                            <span>+ Input Logsheet</span>
-                        </a>
-
-                        <a
-                            href="/iqf-logsheet/export-excel"
-                            className="h-9 px-4 flex items-center justify-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all text-decoration-none shrink-0"
-                        >
-                            <span>Cetak Laporan</span>
-                        </a>
                     </div>
                 </div>
             </div>
