@@ -344,36 +344,60 @@ class RefrezingController extends Controller
             ->orderBy('d.time', 'asc')
             ->get();
 
-        [$fH, $fM] = explode(':', $fromTime);
-        $shiftStartMins = (int)$fH * 60 + (int)$fM;
-        $prevTimeMins = null;
+        $productBaseMins = [
+            'siomay'         => 5.0,
+            'pentol'         => 5.0,
+            'lumpia'         => 12.0,
+            'adonan_pangsit' => 18.9,
+        ];
 
-        foreach ($shiftDetails as $d) {
-            $pt = strtolower($d->product_type);
-            $pt = preg_replace('/_[twl]$/', '', $pt);
-            if ($pt === 'adonan') $pt = 'adonan_pangsit';
+        // Group details by machine for accurate machine timeline calculations
+        $detailsByMachine = $shiftDetails->groupBy('machine');
 
-            [$th, $tm] = explode(':', substr($d->time, 0, 5));
-            $dMins = (int)$th * 60 + (int)$tm;
+        foreach ($detailsByMachine as $m => $mDetails) {
+            $prevMachineTime = null;
+            $prevProductType = null;
+            $prevSameProductTime = [];
 
-            if ($prevTimeMins === null) {
-                // Entri pertama di mesin pada shift ini: ditarik dari awal shift (cth 08:00 ke 08:05 = 5m)
-                $startRef = ($dMins >= $shiftStartMins) ? $shiftStartMins : max(0, $dMins - 5);
-                $gap = max(1, $dMins - $startRef);
-            } else {
-                // Entri berikutnya / pergantian dimsum: ditarik langsung dari jam entri sebelumnya ke jam entri ini
-                $gap = max(0, $dMins - $prevTimeMins);
-                if ($gap > 90) {
-                    $gap = 45;
+            foreach ($mDetails as $d) {
+                $pt = strtolower($d->product_type);
+                $pt = preg_replace('/_[twl]$/', '', $pt);
+                if ($pt === 'adonan') $pt = 'adonan_pangsit';
+
+                [$th, $tm] = explode(':', substr($d->time, 0, 5));
+                $dMins = (int)$th * 60 + (int)$tm;
+
+                $baseInit = $productBaseMins[$pt] ?? 5.0;
+
+                if ($prevMachineTime === null) {
+                    // Entri paling pertama di mesin: Menggunakan kredit dasar produk (+5m Siomay/Pentol, +12m Lumpia, +18.9m Adonan)
+                    $gap = (float)$baseInit;
+                } else if ($pt !== $prevProductType) {
+                    // Entri pertama dari pergantian produk (Gelombang baru / changeover):
+                    // Ditarik dari jam entri produk sebelumnya di mesin ke jam entri produk ini
+                    $gap = (float)max(1, $dMins - $prevMachineTime);
+                    if ($gap > 90) {
+                        $gap = (float)$baseInit;
+                    }
+                } else {
+                    // Entri berikutnya dari produk yang sama:
+                    // Ditarik dari jam entri sebelumnya produk yang sama
+                    $lastSame = $prevSameProductTime[$pt] ?? $prevMachineTime;
+                    $gap = (float)max(0, $dMins - $lastSame);
+                    if ($gap > 90) {
+                        $gap = (float)$baseInit;
+                    }
                 }
-            }
 
-            $prevTimeMins = $dMins;
+                $prevMachineTime = $dMins;
+                $prevProductType = $pt;
+                $prevSameProductTime[$pt] = $dMins;
 
-            if (isset($activeByProduct[$pt])) {
-                $activeByProduct[$pt] += $gap;
-            } else {
-                $activeByProduct[$pt] = $gap;
+                if (isset($activeByProduct[$pt])) {
+                    $activeByProduct[$pt] += $gap;
+                } else {
+                    $activeByProduct[$pt] = $gap;
+                }
             }
         }
 
