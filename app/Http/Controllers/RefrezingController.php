@@ -344,9 +344,9 @@ class RefrezingController extends Controller
             ->orderBy('d.time', 'asc')
             ->get();
 
-        // Build continuous blocks per product to calculate realistic active duration in minutes
-        $productBlocks = [];
-        $currBlock = null;
+        [$fH, $fM] = explode(':', $fromTime);
+        $shiftStartMins = (int)$fH * 60 + (int)$fM;
+        $prevTimeMins = null;
 
         foreach ($shiftDetails as $d) {
             $pt = strtolower($d->product_type);
@@ -356,80 +356,24 @@ class RefrezingController extends Controller
             [$th, $tm] = explode(':', substr($d->time, 0, 5));
             $dMins = (int)$th * 60 + (int)$tm;
 
-            if (!$currBlock) {
-                $currBlock = [
-                    'product_type' => $pt,
-                    'start_mins'   => $dMins,
-                    'last_mins'    => $dMins,
-                    'first_time'   => substr($d->time, 0, 5),
-                    'last_time'    => substr($d->time, 0, 5),
-                    'entries'      => [substr($d->time, 0, 5)],
-                ];
-            } else if ($currBlock['product_type'] === $pt && ($dMins - $currBlock['last_mins']) <= 45) {
-                $currBlock['last_mins'] = $dMins;
-                $currBlock['last_time'] = substr($d->time, 0, 5);
-                $currBlock['entries'][] = substr($d->time, 0, 5);
+            if ($prevTimeMins === null) {
+                // Entri pertama di mesin pada shift ini: ditarik dari awal shift (cth 08:00 ke 08:05 = 5m)
+                $startRef = ($dMins >= $shiftStartMins) ? $shiftStartMins : max(0, $dMins - 5);
+                $gap = max(1, $dMins - $startRef);
             } else {
-                $productBlocks[] = $currBlock;
-                $currBlock = [
-                    'product_type' => $pt,
-                    'start_mins'   => $dMins,
-                    'last_mins'    => $dMins,
-                    'first_time'   => substr($d->time, 0, 5),
-                    'last_time'    => substr($d->time, 0, 5),
-                    'entries'      => [substr($d->time, 0, 5)],
-                ];
-            }
-        }
-        if ($currBlock) {
-            $productBlocks[] = $currBlock;
-        }
-
-        $productBaseMins = [
-            'siomay'         => 5.0,
-            'pentol'         => 5.0,
-            'lumpia'         => 12.0,
-            'adonan_pangsit' => 18.9,
-        ];
-
-        // Calculate active minutes per product from blocks
-        for ($i = 0; $i < count($productBlocks); $i++) {
-            $blk = &$productBlocks[$i];
-            $pt  = $blk['product_type'];
-            $baseInit = $productBaseMins[$pt] ?? 5.0;
-            $span = $blk['last_mins'] - $blk['start_mins'];
-
-            if ($i === 0) {
-                // Input pertama di awal shift: durasi base (+5m Siomay/Pentol, +12m Lumpia, +18.9m Adonan) + span internal
-                // Buffer pergantian (+2m) dialokasikan ke dimsum tujuan (block berikutnya)
-                $dur = $baseInit + $span;
-            } else {
-                // Dimsum tujuan pergantian: menyerap gap/buffer pergantian dari entri terakhir produk sebelumnya
-                $prevLast = $productBlocks[$i - 1]['last_mins'];
-                $changeoverGap = max(0, $blk['start_mins'] - $prevLast);
-
-                if (isset($productBlocks[$i + 1])) {
-                    $nextStart = $productBlocks[$i + 1]['start_mins'];
-                    $gapToNext = max(0, $nextStart - $blk['start_mins']);
-                    if ($gapToNext > 0 && $gapToNext <= 120) {
-                        $dur = (float)$gapToNext;
-                    } else {
-                        $dur = (float)($changeoverGap + $span);
-                    }
-                } else {
-                    if ($span > 0) {
-                        $dur = (float)($changeoverGap + $span);
-                    } else {
-                        $dur = 5.0;
-                    }
+                // Entri berikutnya / pergantian dimsum: ditarik langsung dari jam entri sebelumnya ke jam entri ini
+                $gap = max(0, $dMins - $prevTimeMins);
+                if ($gap > 90) {
+                    $gap = 45;
                 }
             }
 
-            $blk['duration_mins'] = $dur;
+            $prevTimeMins = $dMins;
+
             if (isset($activeByProduct[$pt])) {
-                $activeByProduct[$pt] += $dur;
+                $activeByProduct[$pt] += $gap;
             } else {
-                $activeByProduct[$pt] = $dur;
+                $activeByProduct[$pt] = $gap;
             }
         }
 
