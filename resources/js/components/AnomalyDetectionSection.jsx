@@ -101,8 +101,8 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                 adonan: adonanItem ? `${adonanItem.time} (${adonanItem.tray_count ?? 0} S)` : '-',
                 downtime: dtItem ? (
                     (dtItem.dur_mins && dtItem.dur_mins > 0)
-                        ? `${dtItem.text} (⏱ ${dtItem.dur_mins}m)`
-                        : `${dtItem.text} (⏱ Belum Selesai)`
+                        ? `${dtItem.text} (${dtItem.dur_mins}m)`
+                        : `${dtItem.text} (Belum Selesai)`
                 ) : '-',
             };
         });
