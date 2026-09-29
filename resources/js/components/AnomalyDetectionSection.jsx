@@ -301,6 +301,33 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                 </Row>
+                <Row>
+                    <Column header={
+                        <div className="flex flex-col items-center justify-center leading-tight py-0.5">
+                            <span className="text-xs font-black mt-0.5">{siomayTotalLoyang + pentolTotalLoyang + lumpiaTotalKeranjang + adonanTotalSolid} total</span>
+                        </div>
+                    } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
+                    <Column header={
+                        <div className="flex flex-col items-center justify-center leading-tight py-0.5">
+                            <span className="text-xs font-black mt-0.5">{siomayTotalLoyang} loyang</span>
+                        </div>
+                    } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
+                    <Column header={
+                        <div className="flex flex-col items-center justify-center leading-tight py-0.5">
+                            <span className="text-xs font-black mt-0.5">{pentolTotalLoyang} loyang</span>
+                        </div>
+                    } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
+                    <Column header={
+                        <div className="flex flex-col items-center justify-center leading-tight py-0.5">
+                            <span className="text-xs font-black mt-0.5">{lumpiaTotalKeranjang} keranjang</span>
+                        </div>
+                    } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
+                    <Column header={
+                        <div className="flex flex-col items-center justify-center leading-tight py-0.5">
+                            <span className="text-xs font-black mt-0.5">{adonanTotalSolid} solid</span>
+                        </div>
+                    } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
+                </Row>
             </ColumnGroup>
         );
 
@@ -591,7 +618,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                             border-collapse: collapse !important;
                         }
                         .p-datatable .p-datatable-thead {
-                            display: table-header-group !important;
+                            display: table-row-group !important;
                         }
                         .p-datatable .p-datatable-thead > tr > th {
                             border: 1px solid #0f172a !important;
