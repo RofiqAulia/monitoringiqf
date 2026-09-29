@@ -331,27 +331,37 @@ class IqfLogsheetController extends Controller
                     // Entri paling pertama di mesin pada shift: Menggunakan kredit dasar produk (+5m Siomay/Pentol, +12m Lumpia, +18.9m Adonan)
                     $gap = (float)$baseInit;
                 } else {
-                    // Ditarik langsung dari jam entri sebelumnya di mesin ke jam entri ini (cth: 09:11 ke 09:24 = 13m)
-                    $gap = (float)max(0, $dMins - $prevMachineTime);
+                    // Ditarik langsung dari jam entri sebelumnya di mesin ke jam entri ini
+                    $rawDiff = $dMins - $prevMachineTime;
+
+                    // Jika interval melintasi jam istirahat shift (12:00 - 13:00 WIB / 720 - 780 menit), kurangi 60m istirahat
+                    if ($prevMachineTime <= 720 && $dMins >= 780) {
+                        $rawDiff = max(0, $rawDiff - 60);
+                    }
+
+                    $gap = (float)max(0, $rawDiff);
                     if ($gap > 90) {
                         $gap = (float)$baseInit;
                     }
                 }
 
-                // Kurangi durasi kendala/downtime yang terjadi di dalam interval ini ("kendala maka diam = 0")
+                // Kurangi durasi kendala/downtime HANYA jika waktu kendala jatuh di dalam interval entri ini
+                // (prevMachineTime < stopStartMin <= dMins), bukan untuk semua entri dengan gap > stopDur
                 foreach ($unplannedStopsData as $stop) {
                     if (($stop['machine'] ?? '') === $m) {
                         $stopDur = (int)($stop['duration_mins'] ?? $stop['dur_mins'] ?? 0);
-                        if ($stopDur > 0 && $gap > $stopDur) {
-                            $gap = max(0, $gap - $stopDur);
+                        if ($stopDur > 0 && $gap > $stopDur && $prevMachineTime !== null) {
+                            // Parse waktu mulai kendala dari teks (format: "HH:MM - keterangan")
+                            $stopStartMin = null;
+                            if (preg_match('/^(\d{1,2}):(\d{2})/', $stop['text'] ?? '', $stopMatches)) {
+                                $stopStartMin = (int)$stopMatches[1] * 60 + (int)$stopMatches[2];
+                            }
+                            // Hanya kurangi jika waktu kendala berada di dalam interval entri ini
+                            if ($stopStartMin !== null && $stopStartMin > $prevMachineTime && $stopStartMin <= $dMins) {
+                                $gap = max(0, $gap - $stopDur);
+                            }
                         }
                     }
-                }
-
-                // Buffer minimal batch akhir kecil (cth: 3 S di 11:00 mendapatkan minimal 7m)
-                $trays = (int)($d->tray_count ?? 0);
-                if ($trays > 0 && $trays <= 3 && $gap < 7.0) {
-                    $gap = 7.0;
                 }
 
                 $prevMachineTime = $dMins;
