@@ -349,21 +349,45 @@ class IqfLogsheetController extends Controller
                 $productBlocks[] = $currBlock;
             }
 
+            $productBaseMins = [
+                'siomay'         => 5.0,
+                'pentol'         => 5.0,
+                'lumpia'         => 12.0,
+                'adonan_pangsit' => 18.9,
+            ];
+
             for ($i = 0; $i < count($productBlocks); $i++) {
                 $blk = &$productBlocks[$i];
-                $pt = $blk['product_type'];
+                $pt  = $blk['product_type'];
+                $baseInit = $productBaseMins[$pt] ?? 5.0;
+                $span = $blk['last_mins'] - $blk['start_mins'];
 
-                if (isset($productBlocks[$i + 1])) {
-                    $nextStart = $productBlocks[$i + 1]['start_mins'];
-                    $gap = $nextStart - $blk['start_mins'];
-                    if ($gap > 0 && $gap <= 120) {
-                        $dur = $gap;
-                    } else {
-                        $dur = max(5, ($blk['last_mins'] - $blk['start_mins']) + 5);
-                    }
+                if ($i === 0) {
+                    // Input pertama di awal shift: durasi base (+5m Siomay/Pentol, +12m Lumpia, +18.9m Adonan) + span internal
+                    // Buffer pergantian (+2m) dialokasikan ke dimsum tujuan (block berikutnya)
+                    $dur = $baseInit + $span;
                 } else {
-                    $dur = max(5, ($blk['last_mins'] - $blk['start_mins']) + 5);
+                    // Dimsum tujuan pergantian: menyerap gap/buffer pergantian dari entri terakhir produk sebelumnya
+                    $prevLast = $productBlocks[$i - 1]['last_mins'];
+                    $changeoverGap = max(0, $blk['start_mins'] - $prevLast);
+
+                    if (isset($productBlocks[$i + 1])) {
+                        $nextStart = $productBlocks[$i + 1]['start_mins'];
+                        $gapToNext = max(0, $nextStart - $blk['start_mins']);
+                        if ($gapToNext > 0 && $gapToNext <= 120) {
+                            $dur = (float)$gapToNext;
+                        } else {
+                            $dur = (float)($changeoverGap + $span);
+                        }
+                    } else {
+                        if ($span > 0) {
+                            $dur = (float)($changeoverGap + $span);
+                        } else {
+                            $dur = 5.0;
+                        }
+                    }
                 }
+
                 $blk['duration_mins'] = $dur;
                 if (isset($activeByProduct[$pt])) {
                     $activeByProduct[$pt] += $dur;
