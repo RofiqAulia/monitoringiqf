@@ -316,8 +316,6 @@ class IqfLogsheetController extends Controller
             ];
 
             $prevMachineTime = null;
-            $prevProductType = null;
-            $prevSameProductTime = [];
 
             foreach ($machineShiftDetails as $d) {
                 $pt = strtolower($d->product_type);
@@ -330,28 +328,33 @@ class IqfLogsheetController extends Controller
                 $baseInit = $productBaseMins[$pt] ?? 5.0;
 
                 if ($prevMachineTime === null) {
-                    // Entri paling pertama di mesin: Menggunakan kredit dasar produk (+5m Siomay/Pentol, +12m Lumpia, +18.9m Adonan)
+                    // Entri paling pertama di mesin pada shift: Menggunakan kredit dasar produk (+5m Siomay/Pentol, +12m Lumpia, +18.9m Adonan)
                     $gap = (float)$baseInit;
-                } else if ($pt !== $prevProductType) {
-                    // Entri pertama dari pergantian produk (Gelombang baru / changeover):
-                    // Ditarik dari jam entri produk sebelumnya di mesin ke jam entri produk ini
-                    $gap = (float)max(1, $dMins - $prevMachineTime);
-                    if ($gap > 90) {
-                        $gap = (float)$baseInit;
-                    }
                 } else {
-                    // Entri berikutnya dari produk yang sama:
-                    // Ditarik dari jam entri sebelumnya produk yang sama
-                    $lastSame = $prevSameProductTime[$pt] ?? $prevMachineTime;
-                    $gap = (float)max(0, $dMins - $lastSame);
+                    // Ditarik langsung dari jam entri sebelumnya di mesin ke jam entri ini (cth: 09:11 ke 09:24 = 13m)
+                    $gap = (float)max(0, $dMins - $prevMachineTime);
                     if ($gap > 90) {
                         $gap = (float)$baseInit;
                     }
                 }
 
+                // Kurangi durasi kendala/downtime yang terjadi di dalam interval ini ("kendala maka diam = 0")
+                foreach ($unplannedStopsData as $stop) {
+                    if (($stop['machine'] ?? '') === $m) {
+                        $stopDur = (int)($stop['duration_mins'] ?? $stop['dur_mins'] ?? 0);
+                        if ($stopDur > 0 && $gap > $stopDur) {
+                            $gap = max(0, $gap - $stopDur);
+                        }
+                    }
+                }
+
+                // Buffer minimal batch akhir kecil (cth: 3 S di 11:00 mendapatkan minimal 7m)
+                $trays = (int)($d->tray_count ?? 0);
+                if ($trays > 0 && $trays <= 3 && $gap < 7.0) {
+                    $gap = 7.0;
+                }
+
                 $prevMachineTime = $dMins;
-                $prevProductType = $pt;
-                $prevSameProductTime[$pt] = $dMins;
 
                 if (isset($activeByProduct[$pt])) {
                     $activeByProduct[$pt] += $gap;
