@@ -202,37 +202,37 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL MENIT</span> */}
-                            <span className="text-xs font-black mt-0.5">{totalDimsumMins} menit</span>
+                            <span className="text-[10px] font-black mt-0.5">{totalDimsumMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
-                            <span className="text-xs font-black mt-0.5">{siomayMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomayMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
-                            <span className="text-xs font-black mt-0.5">{pentolMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{pentolMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
-                            <span className="text-xs font-black mt-0.5">{lumpiaMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{lumpiaMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
-                            <span className="text-xs font-black mt-0.5">{adonanMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{adonanMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
-                    <Column rowSpan={3} header={
+                    <Column rowSpan={4} header={
                         <div className="flex flex-col items-center justify-center leading-tight py-1">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
-                            <span className="text-xs font-black mt-1">{downtime_minutes} menit</span>
+                            <span className="text-[10px] font-black mt-1">{downtime_minutes} menit</span>
                             <span className="text-[10px] font-semibold mt-0.5">({sortedDowntime.length} kendala)</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fef9c3', color: '#854d0e', fontWeight: '900', textAlign: 'center' }} />
@@ -241,31 +241,31 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">WAKTU RESEP</span> */}
-                            <span className="text-xs font-black mt-0.5">{totalResepMins} menit</span>
+                            <span className="text-[10px] font-black mt-0.5">{totalResepMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(LOYANG X 13.2)/60</span> */}
-                            <span className="text-xs font-black mt-0.5">{siomayResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomayResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(LOYANG X 13.2)/60</span> */}
-                            <span className="text-xs font-black mt-0.5">{pentolResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{pentolResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(KERANJANG X 1.5)</span> */}
-                            <span className="text-xs font-black mt-0.5">{lumpiaResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{lumpiaResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(SOLID X 71)</span> */}
-                            <span className="text-xs font-black mt-0.5">{adonanResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{adonanResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                 </Row>
@@ -273,58 +273,58 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL SELISIH</span> */}
-                            <span className="text-xs font-black mt-0.5">{totalSelisih} menit</span>
+                            <span className="text-[10px] font-black mt-0.5">{totalSelisih} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
-                            <span className="text-xs font-black mt-0.5">{siomaySelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomaySelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
-                            <span className="text-xs font-black mt-0.5">{pentolSelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{pentolSelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
-                            <span className="text-xs font-black mt-0.5">{lumpiaSelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{lumpiaSelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
                             {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
-                            <span className="text-xs font-black mt-0.5">{adonanSelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{adonanSelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                 </Row>
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-xs font-black mt-0.5">{siomayTotalLoyang + pentolTotalLoyang + lumpiaTotalKeranjang + adonanTotalSolid} total</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomayTotalLoyang + pentolTotalLoyang + lumpiaTotalKeranjang + adonanTotalSolid} total</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-xs font-black mt-0.5">{siomayTotalLoyang} loyang</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomayTotalLoyang} loyang</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-xs font-black mt-0.5">{pentolTotalLoyang} loyang</span>
+                            <span className="text-[10px] font-black mt-0.5">{pentolTotalLoyang} loyang</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-xs font-black mt-0.5">{lumpiaTotalKeranjang} keranjang</span>
+                            <span className="text-[10px] font-black mt-0.5">{lumpiaTotalKeranjang} keranjang</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-xs font-black mt-0.5">{adonanTotalSolid} solid</span>
+                            <span className="text-[10px] font-black mt-0.5">{adonanTotalSolid} solid</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                 </Row>
@@ -333,22 +333,22 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
 
         // Body templates for customized cell rendering
         const indexBodyTemplate = (rowData) => (
-            <span className="font-mono font-bold text-slate-400">{rowData.index}</span>
+            <span className="font-mono font-bold text-slate-400 text-[10px]">{rowData.index}</span>
         );
         const siomayBodyTemplate = (rowData) => (
-            <span className="font-mono text-cyan-900 font-bold">{rowData.siomay}</span>
+            <span className="font-mono text-cyan-900 font-bold text-[10px]">{rowData.siomay}</span>
         );
         const pentolBodyTemplate = (rowData) => (
-            <span className="font-mono text-rose-900 font-bold">{rowData.pentol}</span>
+            <span className="font-mono text-rose-900 font-bold text-[10px]">{rowData.pentol}</span>
         );
         const lumpiaBodyTemplate = (rowData) => (
-            <span className="font-mono text-teal-900 font-bold">{rowData.lumpia}</span>
+            <span className="font-mono text-teal-900 font-bold text-[10px]">{rowData.lumpia}</span>
         );
         const adonanBodyTemplate = (rowData) => (
-            <span className="font-mono text-purple-900 font-bold">{rowData.adonan}</span>
+            <span className="font-mono text-purple-900 font-bold text-[10px]">{rowData.adonan}</span>
         );
         const downtimeBodyTemplate = (rowData) => (
-            <span className="text-rose-700 font-semibold text-left block leading-relaxed whitespace-pre-line" style={{ lineHeight: '1.5' }}>
+            <span className="text-rose-700 font-semibold text-left block leading-tight whitespace-pre-line text-[10px]" style={{ lineHeight: '1.2' }}>
                 {rowData.downtime}
             </span>
         );
@@ -623,21 +623,24 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                         .p-datatable .p-datatable-thead > tr > th {
                             border: 1px solid #0f172a !important;
                             border-radius: 0 !important;
-                            padding: 5px 6px !important;
+                            padding: 3px 6px !important;
                             font-size: 10px !important;
                             -webkit-print-color-adjust: exact !important;
                             print-color-adjust: exact !important;
                         }
                         .p-datatable .p-datatable-tbody > tr {
+                            height: 24px !important;
                             page-break-inside: avoid !important;
                             break-inside: avoid !important;
                         }
                         .p-datatable .p-datatable-tbody > tr > td {
                             border: 1px solid #334155 !important;
                             border-radius: 0 !important;
-                            padding: 4px 6px !important;
+                            padding: 0 6px !important;
+                            height: 24px !important;
                             font-size: 10px !important;
                             color: #0f172a !important;
+                            box-sizing: border-box !important;
                         }
                         .p-datatable-wrapper {
                             overflow: visible !important;
@@ -656,12 +659,17 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     }
 
                     .p-datatable .p-datatable-thead > tr > th {
-                        padding: 0.6rem 0.75rem !important;
-                        font-size: 0.75rem !important;
+                        padding: 0.35rem 0.5rem !important;
+                        font-size: 10px !important;
+                    }
+                    .p-datatable .p-datatable-tbody > tr {
+                        height: 24px !important;
                     }
                     .p-datatable .p-datatable-tbody > tr > td {
-                        padding: 0.5rem 0.75rem !important;
-                        font-size: 0.75rem !important;
+                        height: 24px !important;
+                        padding: 0 0.5rem !important;
+                        font-size: 10px !important;
+                        box-sizing: border-box !important;
                     }
                     .p-column-header-content {
                         justify-content: center !important;
