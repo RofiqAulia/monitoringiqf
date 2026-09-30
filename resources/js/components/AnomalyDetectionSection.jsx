@@ -33,8 +33,8 @@ function getTodayWib() {
     return wib.getFullYear() + '-' + String(wib.getMonth() + 1).padStart(2, '0') + '-' + String(wib.getDate()).padStart(2, '0');
 }
 
-/** Komponen jam real-time untuk footer */
-function LiveClockFooter() {
+/** Komponen jam real-time untuk footer & cetak */
+function LiveClockFooter({ className = "text-xs font-bold text-slate-700 tracking-tight" }) {
     const [now, setNow] = useState(new Date());
     useEffect(() => {
         const timer = setInterval(() => setNow(new Date()), 1000);
@@ -44,7 +44,7 @@ function LiveClockFooter() {
     const dateStr = wib.toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
     const timeStr = wib.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     return (
-        <span className="text-xs font-bold text-slate-700 tracking-tight">
+        <span className={className}>
             {dateStr}, {timeStr} WIB
         </span>
     );
@@ -477,6 +477,12 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                     {unaccounted_minutes} menit
                                 </td>
                             </tr>
+                            <tr>
+                                <td className="bg-slate-100 font-bold px-3 py-1.5 border border-slate-900 text-slate-800">Waktu Cetak</td>
+                                <td colSpan={3} className="font-extrabold px-3 py-1.5 border border-slate-900 text-slate-900">
+                                    <LiveClockFooter className="text-xs font-bold text-slate-900" />
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -617,6 +623,10 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                 <h2 className="text-sm font-black text-slate-900 uppercase tracking-tight m-0">PT. PESTA PORA ABADI</h2>
                                 <h3 className="text-xs font-bold text-slate-700 m-0">PPA DIGITALIZATION — PRODUCTION SYSTEMS</h3>
                                 <p className="text-[10px] font-semibold text-slate-500 m-0 mt-0.5">Form Laporan Deteksi Anomali & Matriks Logsheet IQF</p>
+                                <p className="text-[10px] font-extrabold text-slate-800 m-0 mt-1 flex items-center justify-end gap-1">
+                                    <span>📅 Cetak:</span>
+                                    <LiveClockFooter className="text-[10px] font-black text-slate-900" />
+                                </p>
                             </div>
                         </div>
                     </div>
