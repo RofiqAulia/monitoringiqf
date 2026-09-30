@@ -33,6 +33,23 @@ function getTodayWib() {
     return wib.getFullYear() + '-' + String(wib.getMonth() + 1).padStart(2, '0') + '-' + String(wib.getDate()).padStart(2, '0');
 }
 
+/** Komponen jam real-time untuk footer */
+function LiveClockFooter() {
+    const [now, setNow] = useState(new Date());
+    useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+    const wib = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+    const dateStr = wib.toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+    const timeStr = wib.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return (
+        <span className="text-xs font-bold text-slate-700 tracking-tight">
+            {dateStr}, {timeStr} WIB
+        </span>
+    );
+}
+
 export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi Anomali & Rekap Shift IQF" }) {
     const [selectedTab, setSelectedTab] = useState('ALL'); // 'ALL', 'IQF 1', 'IQF 2'
     const [printingMachine, setPrintingMachine] = useState(null); // null, 'IQF 1', 'IQF 2'
@@ -889,6 +906,15 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     {(selectedTab === 'ALL' || selectedTab === 'IQF 2') && renderMachineCard('IQF 2', iqf2Data || effectiveData)}
                 </div>
                 )}
+
+                {/* ── Footer: Tanggal & Jam Real-Time ── */}
+                <div className="bg-slate-50/80 border border-slate-200/80 rounded-2xl px-5 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Waktu Server (WIB)</span>
+                    </div>
+                    <LiveClockFooter />
+                </div>
             </div>
         </>
     );
