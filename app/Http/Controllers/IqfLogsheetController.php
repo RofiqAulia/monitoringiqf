@@ -167,6 +167,30 @@ class IqfLogsheetController extends Controller
                         'dur_mins'      => $durMins,
                         'duration_mins' => $durMins,
                     ];
+                } else {
+                    // Preserve kendala entries that do not have an HH:MM timestamp prefix
+                    $durMins = 0;
+                    if (preg_match('/(\d+)\s*(?:m|menit)/i', $stopText, $durMatches)) {
+                        $durMins = (int)$durMatches[1];
+                    }
+
+                    $pic = 'Unknown';
+                    if (!empty($ls->spv) && $ls->spv !== 'Unknown' && $ls->spv !== '-') {
+                        $pic = $ls->spv;
+                    } else if ($sameLogsheetDetails->count() > 0) {
+                        $firstPic = $sameLogsheetDetails->first()->pic ?? null;
+                        $pic = ($firstPic && $firstPic !== 'Unknown') ? $firstPic : 'Unknown';
+                    }
+
+                    $unplannedStopsData[] = [
+                        'shift'         => $ls->shift,
+                        'machine'       => $ls->machine,
+                        'pic'           => $pic,
+                        'text'          => $stopText,
+                        'duration'      => $durMins > 0 ? ($durMins . ' menit') : 'Belum Selesai',
+                        'dur_mins'      => $durMins,
+                        'duration_mins' => $durMins,
+                    ];
                 }
             }
         }

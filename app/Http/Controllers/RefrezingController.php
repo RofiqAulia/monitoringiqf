@@ -186,6 +186,14 @@ class RefrezingController extends Controller
                         $durMins = 0;
                         $durationStr = 'Belum Selesai';
                     }
+                } else {
+                    if (preg_match('/(\d+)\s*(?:m|menit)/i', $stopText, $durMatches)) {
+                        $durMins = (int)$durMatches[1];
+                        $durationStr = $durMins . ' menit';
+                    } else {
+                        $durMins = 0;
+                        $durationStr = 'Belum Selesai';
+                    }
                 }
                 
                 $pic = 'Unknown';
@@ -208,6 +216,7 @@ class RefrezingController extends Controller
                     'dur_mins'      => $durMins,
                     'duration_mins' => $durMins,
                 ];
+            }
             }
         }
 

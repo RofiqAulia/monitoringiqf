@@ -73,6 +73,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
             const res = await axios.get('/dashboard/stats', {
                 params: {
                     date: date,
+                    shift: shift,
                     from_time: shiftConfig.from,
                     to_time: shiftConfig.to,
                 },
