@@ -80,7 +80,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
             });
             setLocalAnomalyData(res.data?.anomaly_detection || null);
         } catch (e) {
-            console.error('Gagal memuat data anomali:', e);
+            console.error('Gagal memuat data:', e);
             setLocalAnomalyData(null);
         } finally {
             setFilterLoading(false);
@@ -103,7 +103,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
     if (!effectiveData && !filterLoading) {
         return (
             <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 text-center text-slate-400 text-xs font-semibold">
-                Memuat data deteksi anomali...
+                Memuat data deteksi losstime...
             </div>
         );
     }
@@ -450,7 +450,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                 <div className="hidden print-machine-header mb-4">
                     <div className="flex items-center justify-between border-b border-slate-900 pb-1.5 mb-2">
                         <h4 className="text-sm font-black text-slate-900 m-0 uppercase tracking-wide">
-                            FORM REKAP MATRIKS DETEKSI LossTime & LOGSHEET ({mName})
+                            FORM REKAP MATRIKS DETEKSI LOSSTIME & LOGSHEET ({mName})
                         </h4>
                         <span className={`text-[11px] font-black uppercase px-2.5 py-0.5 border ${
                             isAnomaly ? 'bg-rose-100 text-rose-900 border-rose-500' :
@@ -497,7 +497,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h4 className="text-base font-black text-white m-0 tracking-tight">{mName} - Deteksi Anomali</h4>
+                                <h4 className="text-base font-black text-white m-0 tracking-tight">{mName} - Deteksi Losstime</h4>
                                 <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
                                     isAnomaly ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' :
                                     isWarning ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
@@ -529,7 +529,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                             <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                             <div>
                                 <h5 className="text-xs font-black text-rose-900 m-0 uppercase">
-                                    🛑 ANOMALI {mName}: SELISIH {unaccounted_minutes} MENIT (LOSS TIME)
+                                    🛑 TERJADI LOSSTIME {mName}: SELISIH {unaccounted_minutes} MENIT
                                 </h5>
                                 <p className="text-xs text-rose-800 font-medium leading-relaxed mt-0.5 mb-0">
                                     Total input dimsum ({total_active_dimsum_mins}m) + downtime ({downtime_minutes}m) = <strong>{total_recorded_minutes}m</strong> dari <strong>{elapsed_shift_minutes}m</strong> menit berjalan shift (target full shift <strong>{target_shift_minutes}m</strong>).
@@ -552,7 +552,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 px-4 flex items-center gap-2.5 text-emerald-900 web-anomaly-alert">
                             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                             <p className="text-xs font-bold m-0">
-                                ✅ Jam kerja {mName} ter-cover 100% tanpa anomali ({total_recorded_minutes}m ter-log dari {elapsed_shift_minutes}m menit berjalan shift).
+                                ✅ Jam kerja {mName} ter-cover 100% tanpa losstime ({total_recorded_minutes}m ter-log dari {elapsed_shift_minutes}m menit berjalan shift).
                             </p>
                         </div>
                     )}
@@ -562,7 +562,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                         <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-2 mb-1">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider block">
-                                    📊 Matriks Logsheet PrimeReact DataTable ({mName})
+                                    📊 Matriks Logsheet Hitung Durasi Input dan Selisih Losstime({mName})
                                 </span>
                                 <span className="text-[11px] text-slate-400 font-medium italic hidden sm:inline">
                                     • ColumnGroup & Interaktif Sorting
@@ -815,7 +815,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                 type="button"
                                 onClick={handlePrintAnomaly}
                                 className="h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer border-0 shrink-0"
-                                title="Cetak Laporan Anomali"
+                                title="Cetak Laporan Losstime"
                             >
                                 <Printer className="w-3.5 h-3.5" />
                                 <span>Cetak Laporan</span>
