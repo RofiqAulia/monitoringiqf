@@ -50,7 +50,7 @@ function LiveClockFooter({ className = "text-xs font-bold text-slate-700 trackin
     );
 }
 
-export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi Anomali & Rekap Shift IQF" }) {
+export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi LossTime & Rekap Shift IQF" }) {
     const [selectedTab, setSelectedTab] = useState('ALL'); // 'ALL', 'IQF 1', 'IQF 2'
     const [printingMachine, setPrintingMachine] = useState(null); // null, 'IQF 1', 'IQF 2'
 
@@ -450,7 +450,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                 <div className="hidden print-machine-header mb-4">
                     <div className="flex items-center justify-between border-b border-slate-900 pb-1.5 mb-2">
                         <h4 className="text-sm font-black text-slate-900 m-0 uppercase tracking-wide">
-                            FORM REKAP MATRIKS DETEKSI ANOMALI & LOGSHEET ({mName})
+                            FORM REKAP MATRIKS DETEKSI LossTime & LOGSHEET ({mName})
                         </h4>
                         <span className={`text-[11px] font-black uppercase px-2.5 py-0.5 border ${
                             isAnomaly ? 'bg-rose-100 text-rose-900 border-rose-500' :
@@ -622,7 +622,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                             <div className="text-right leading-tight">
                                 <h2 className="text-sm font-black text-slate-900 uppercase tracking-tight m-0">PT. PESTA PORA ABADI</h2>
                                 <h3 className="text-xs font-bold text-slate-700 m-0">PPA DIGITALIZATION — PRODUCTION SYSTEMS</h3>
-                                <p className="text-[10px] font-semibold text-slate-500 m-0 mt-0.5">Form Laporan Deteksi Anomali & Matriks Logsheet IQF</p>
+                                <p className="text-[10px] font-semibold text-slate-500 m-0 mt-0.5">Form Laporan Deteksi LossTime & Matriks Logsheet IQF</p>
                                 <p className="text-[10px] font-extrabold text-slate-800 m-0 mt-1 flex items-center justify-end gap-1">
                                     <span>📅 Cetak:</span>
                                     <LiveClockFooter className="text-[10px] font-black text-slate-900" />
@@ -888,7 +888,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                 </span>
                             ) : !isDefaultFilter ? (
                                 <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full">
-                                    📅 Menampilkan data: {new Date(filterDate + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} — {SHIFT_MAP[filterShift]?.label || 'Semua Shift'}
+                                    Menampilkan data: {new Date(filterDate + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} — {SHIFT_MAP[filterShift]?.label || 'Semua Shift'}
                                 </span>
                             ) : (
                                 <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full flex items-center gap-1">
@@ -905,7 +905,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     <div className="flex items-center justify-center py-16">
                         <div className="flex flex-col items-center gap-3">
                             <Loader2 className="w-8 h-8 text-cyan-600 animate-spin" />
-                            <span className="text-xs font-bold text-slate-400">Memuat data anomali...</span>
+                            <span className="text-xs font-bold text-slate-400">Memuat data losstime...</span>
                         </div>
                     </div>
                 )}

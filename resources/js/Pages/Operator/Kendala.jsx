@@ -8,7 +8,7 @@ const KENDALA_LIST = [
     { label: 'Trouble Sensor',  icon: '📡' },
     { label: 'Tunggu Dimsum',   icon: '⏳' },
     { label: 'Temperatur Naik', icon: '🌡️' },
-    { label: 'Conveyor Mati',   icon: '🔧' },
+    { label: 'Cleaning',        icon: '🔧' },
     { label: 'Lain-lain',       icon: '📝' },
 ];
 

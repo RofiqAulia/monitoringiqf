@@ -75,7 +75,7 @@ export function SidebarAnomalyWidget({ isCollapsed }) {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 font-black text-xs text-rose-700">
                     <Bell className="w-3.5 h-3.5 text-rose-600 fill-rose-100" />
-                    <span>Perhatian Anomali!</span>
+                    <span>Perhatian LossTime!</span>
                 </div>
             </div>
 
@@ -84,7 +84,7 @@ export function SidebarAnomalyWidget({ isCollapsed }) {
                 onClick={scrollToAnomalySection}
                 className="w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-all cursor-pointer border-0"
             >
-                <span>Buka Deteksi Anomali</span>
+                <span>Buka Deteksi LossTime</span>
                 <ChevronRight className="w-3.5 h-3.5" />
             </button>
         </div>
