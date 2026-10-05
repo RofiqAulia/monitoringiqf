@@ -35,7 +35,7 @@ class AnomalyDetectionController extends Controller
             'shift' => $shift,
         ]);
 
-        $iqfRes = $iqfController->dashboardData($iqfDashboardReq);
+        $iqfRes = $iqfController->dashboardStats($iqfDashboardReq);
         $iqfData = $iqfRes->getData(true);
 
         // Fetch Refrezing stats for anomaly detection
@@ -45,7 +45,7 @@ class AnomalyDetectionController extends Controller
             'shift' => $shift,
         ]);
 
-        $refrezingRes = $refrezingController->dashboardData($refrezingDashboardReq);
+        $refrezingRes = $refrezingController->dashboardStats($refrezingDashboardReq);
         $refrezingData = $refrezingRes->getData(true);
 
         return Inertia::render('AnomalyDetection/Index', [
