@@ -46,8 +46,8 @@ export default function Index({ settings }) {
     };
 
     return (
-        <AppLayout title="Setting Refrezing Time">
-            <Head title="Setting Refrezing Time" />
+        <AppLayout title="Setting Rumus">
+            <Head title="Setting Rumus" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Banner */}
@@ -59,7 +59,7 @@ export default function Index({ settings }) {
                                 <Settings className="w-8 h-8 text-cyan-200" />
                             </div>
                             <div>
-                                <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Setting Refrezing Time</h1>
+                                <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Setting Rumus</h1>
                                 <p className="text-cyan-100 text-xs sm:text-sm font-medium mt-1">
                                     Konfigurasi variabel dan parameter rumus estimasi waktu resep produk Refrezing
                                 </p>
@@ -336,7 +336,7 @@ export default function Index({ settings }) {
                             className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#0284c7] hover:bg-sky-700 text-white font-black text-xs shadow-md hover:shadow-lg transition-all disabled:opacity-50"
                         >
                             <Save className="w-4 h-4" />
-                            {processing ? 'Menyimpan...' : 'Simpan Setting Refrezing Time'}
+                            {processing ? 'Menyimpan...' : 'Simpan Setting Rumus'}
                         </button>
                     </div>
                 </form>

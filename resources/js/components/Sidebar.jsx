@@ -10,24 +10,27 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
     const { url, props } = usePage();
     const isAdmin = props.auth?.user?.role === 'admin';
 
-    // State for expandable sections (default open if group active)
-    const isRefrezingDashboardActive = url.startsWith('/refrezing/dashboard');
-    const isRefrezingLogsheetActive  = (url.startsWith('/refrezing/logsheet') || url.startsWith('/refrezing-logsheet')) && !url.includes('/history');
-    const isRefrezingHistoryActive   = url.includes('/refrezing/history') || url.includes('/refrezing-logsheet/history');
-    const isRefrezingSettingActive   = url.startsWith('/refrezing/settings');
-    const isRefrezingGroupActive     = isRefrezingDashboardActive || isRefrezingLogsheetActive || isRefrezingHistoryActive || isRefrezingSettingActive;
-
-    const [iqfOpen, setIqfOpen] = useState(true);
-    const [refrezingOpen, setRefrezingOpen] = useState(isRefrezingGroupActive);
-
     // Active state helpers
-    const isAnomalyActive = url.startsWith('/deteksi-anomali');
+    const isAnomalyActive       = url === '/deteksi-anomali' || url.startsWith('/deteksi-anomali?');
+    const isSettingRumusActive   = url.startsWith('/refrezing/settings');
+    const isLossTimeGroupActive = isAnomalyActive || isSettingRumusActive;
+
     const isIqfDashboardActive = url === '/dashboard' || url === '/' || url.startsWith('/dashboard?');
     const isIqfLogsheetActive  = (url.startsWith('/logsheet-iqf') || url.startsWith('/iqf-logsheet')) && !url.includes('/history');
     const isIqfHistoryActive   = url.includes('/iqf-logsheet/history');
     const isIqfGroupActive     = isIqfDashboardActive || isIqfLogsheetActive || isIqfHistoryActive;
 
+    const isRefrezingDashboardActive = url.startsWith('/refrezing/dashboard');
+    const isRefrezingLogsheetActive  = (url.startsWith('/refrezing/logsheet') || url.startsWith('/refrezing-logsheet')) && !url.includes('/history');
+    const isRefrezingHistoryActive   = url.includes('/refrezing/history') || url.includes('/refrezing-logsheet/history');
+    const isRefrezingGroupActive     = isRefrezingDashboardActive || isRefrezingLogsheetActive || isRefrezingHistoryActive;
+
     const isUserAdminActive = url.startsWith('/admin/users');
+
+    // State for expandable sections
+    const [lossTimeOpen, setLossTimeOpen]   = useState(isLossTimeGroupActive || true);
+    const [iqfOpen, setIqfOpen]             = useState(isIqfGroupActive);
+    const [refrezingOpen, setRefrezingOpen] = useState(isRefrezingGroupActive);
 
     const handleItemClick = () => {
         if (setIsOpen) setIsOpen(false);
@@ -72,20 +75,60 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
                     {!isCollapsed && <span className="truncate">Dashboard Kontrol</span>}
                 </Link>
 
-                {/* DETEKSI ANOMALI & LOSSTIME */}
-                <Link
-                    href="/deteksi-anomali"
-                    onClick={handleItemClick}
-                    className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-150 text-decoration-none ${
-                        isAnomalyActive
-                            ? 'bg-[#0284c7] text-white shadow-xs font-black'
-                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                    }`}
-                    title="Deteksi Anomali & LossTime"
-                >
-                    <AlertCircle className={`w-4 h-4 shrink-0 ${isAnomalyActive ? 'text-white' : 'text-amber-500'}`} />
-                    {!isCollapsed && <span className="truncate">Deteksi Anomali</span>}
-                </Link>
+                {/* DETEKSI LOSSTIME GROUP (Expandable) */}
+                <div className="space-y-1">
+                    <button
+                        type="button"
+                        onClick={() => setLossTimeOpen(!lossTimeOpen)}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition-all ${
+                            isLossTimeGroupActive
+                                ? 'bg-amber-50/80 text-amber-800'
+                                : 'text-slate-600 hover:bg-slate-100'
+                        }`}
+                        title="Deteksi LossTime"
+                    >
+                        <div className="flex items-center gap-3 truncate">
+                            <AlertCircle className={`w-4 h-4 shrink-0 ${isLossTimeGroupActive ? 'text-amber-600' : 'text-slate-500'}`} />
+                            {!isCollapsed && <span className="truncate">Deteksi LossTime</span>}
+                        </div>
+                        {!isCollapsed && (
+                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 text-slate-400 ${lossTimeOpen ? 'rotate-180' : ''}`} />
+                        )}
+                    </button>
+
+                    {/* Sub-items for Deteksi LossTime */}
+                    {(lossTimeOpen || isCollapsed) && (
+                        <div className={`space-y-1 ${!isCollapsed ? 'pl-4 pr-1 border-l-2 border-slate-100 ml-5 my-1' : ''}`}>
+                            <Link
+                                href="/deteksi-anomali"
+                                onClick={handleItemClick}
+                                className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all text-decoration-none ${
+                                    isAnomalyActive
+                                        ? 'bg-[#0284c7] text-white shadow-xs font-black'
+                                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                                }`}
+                                title="Deteksi LossTime"
+                            >
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                {!isCollapsed && <span className="truncate">Deteksi LossTime</span>}
+                            </Link>
+
+                            <Link
+                                href="/refrezing/settings"
+                                onClick={handleItemClick}
+                                className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all text-decoration-none ${
+                                    isSettingRumusActive
+                                        ? 'bg-[#0284c7] text-white shadow-xs font-black'
+                                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                                }`}
+                                title="Setting Rumus"
+                            >
+                                <Settings className="w-3.5 h-3.5 shrink-0" />
+                                {!isCollapsed && <span className="truncate">Setting Rumus</span>}
+                            </Link>
+                        </div>
+                    )}
+                </div>
 
                 {/* IQF PRODUCTION GROUP (Expandable) */}
                 <div className="space-y-1">
@@ -205,20 +248,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
                             >
                                 <ClipboardList className="w-3.5 h-3.5 shrink-0" />
                                 {!isCollapsed && <span className="truncate">Logsheet Harian</span>}
-                            </Link>
-
-                            <Link
-                                href="/refrezing/settings"
-                                onClick={handleItemClick}
-                                className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all text-decoration-none ${
-                                    isRefrezingSettingActive
-                                        ? 'bg-[#0284c7] text-white shadow-xs font-black'
-                                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                                }`}
-                                title="Setting Refrezing Time"
-                            >
-                                <Settings className="w-3.5 h-3.5 shrink-0" />
-                                {!isCollapsed && <span className="truncate">Setting Refrezing Time</span>}
                             </Link>
                         </div>
                     )}
