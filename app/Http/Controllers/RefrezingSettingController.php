@@ -32,6 +32,7 @@ class RefrezingSettingController extends Controller
         ]);
 
         try {
+            RefrezingSetting::ensureTableExists();
             $setting = RefrezingSetting::first();
             if (!$setting) {
                 RefrezingSetting::create($validated);

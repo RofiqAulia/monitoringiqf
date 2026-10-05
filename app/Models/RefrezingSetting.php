@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
 class RefrezingSetting extends Model
 {
@@ -21,6 +22,32 @@ class RefrezingSetting extends Model
         'adonan_divider_min',
     ];
 
+    public static function ensureTableExists()
+    {
+        try {
+            if (!Schema::hasTable('refrezing_settings')) {
+                Schema::create('refrezing_settings', function (Blueprint $table) {
+                    $table->id();
+                    $table->double('siomay_multiplier')->default(290.0);
+                    $table->double('siomay_divider_loyang')->default(22.0);
+                    $table->double('siomay_divider_min')->default(60.0);
+
+                    $table->double('pentol_multiplier')->default(290.0);
+                    $table->double('pentol_divider_loyang')->default(22.0);
+                    $table->double('pentol_divider_min')->default(60.0);
+
+                    $table->double('lumpia_multiplier')->default(1.5);
+
+                    $table->double('adonan_multiplier')->default(71.0);
+                    $table->double('adonan_divider_min')->default(60.0);
+                    $table->timestamps();
+                });
+            }
+        } catch (\Throwable $e) {
+            // Silently swallow or log
+        }
+    }
+
     public static function getSettings()
     {
         $default = [
@@ -35,11 +62,9 @@ class RefrezingSetting extends Model
             'adonan_divider_min'    => 60.0,
         ];
 
-        try {
-            if (!Schema::hasTable('refrezing_settings')) {
-                return (object) $default;
-            }
+        self::ensureTableExists();
 
+        try {
             $setting = self::first();
             if (!$setting) {
                 $setting = self::create($default);
