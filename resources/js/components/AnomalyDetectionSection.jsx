@@ -50,7 +50,7 @@ function LiveClockFooter({ className = "text-xs font-bold text-slate-700 trackin
     );
 }
 
-export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi LossTime & Rekap Shift IQF" }) {
+export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi LossTime & Rekap Shift IQF", apiEndpoint = '/dashboard/stats' }) {
     const [selectedTab, setSelectedTab] = useState('ALL'); // 'ALL', 'IQF 1', 'IQF 2'
     const [printingMachine, setPrintingMachine] = useState(null); // null, 'IQF 1', 'IQF 2'
 
@@ -70,7 +70,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
         const shiftConfig = SHIFT_MAP[shift] || SHIFT_MAP['all'];
         setFilterLoading(true);
         try {
-            const res = await axios.get('/dashboard/stats', {
+            const res = await axios.get(apiEndpoint, {
                 params: {
                     date: date,
                     shift: shift,

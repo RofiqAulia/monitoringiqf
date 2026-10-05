@@ -215,6 +215,7 @@ export default function Index({ filters, iqfAnomaly, iqfAnomalyByMachine, refrez
                         <AnomalyDetectionSection
                             anomalyData={refrezingAnomaly}
                             title="Deteksi LossTime & Anomali Refrezing System"
+                            apiEndpoint="/refrezing/dashboard/stats"
                         />
                     </div>
                 )}
