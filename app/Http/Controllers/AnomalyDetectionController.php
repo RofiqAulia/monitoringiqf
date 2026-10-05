@@ -66,6 +66,7 @@ class AnomalyDetectionController extends Controller
             'refrezingAnomaly' => $refrezingData['anomaly_detection'] ?? null,
             'iqfUnplannedStops' => $iqfData['unplanned_stops'] ?? [],
             'refrezingUnplannedStops' => $refrezingData['unplanned_stops'] ?? [],
+            'refrezingSettings' => \App\Models\RefrezingSetting::getSettings(),
         ]);
     }
 }

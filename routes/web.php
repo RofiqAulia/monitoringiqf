@@ -82,6 +82,10 @@ Route::middleware('auth')->group(function () {
     // Refrezing History
     Route::get('/refrezing/history', [\App\Http\Controllers\RefrezingController::class, 'adminHistory'])->name('refrezing-logsheet.history');
 
+    // Setting Refrezing Time
+    Route::get('/refrezing/settings', [\App\Http\Controllers\RefrezingSettingController::class, 'index'])->name('refrezing-settings.index');
+    Route::post('/refrezing/settings', [\App\Http\Controllers\RefrezingSettingController::class, 'update'])->name('refrezing-settings.update');
+
     // Shared Read Routes (Admin & Koordinator)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import {
-    LayoutDashboard, FileText, History, Snowflake, ClipboardList, Users, LogOut, PanelLeftClose, PanelLeftOpen, ChevronDown, ChevronRight, Layers, AlertCircle, Scan
+    LayoutDashboard, FileText, History, Snowflake, ClipboardList, Users, LogOut, PanelLeftClose, PanelLeftOpen, ChevronDown, ChevronRight, Layers, AlertCircle, Scan, Settings
 } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { SidebarAnomalyWidget } from '@/components/SidebarAnomalyWidget';
@@ -10,9 +10,15 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
     const { url, props } = usePage();
     const isAdmin = props.auth?.user?.role === 'admin';
 
-    // State for expandable sections (default open)
+    // State for expandable sections (default open if group active)
+    const isRefrezingDashboardActive = url.startsWith('/refrezing/dashboard');
+    const isRefrezingLogsheetActive  = (url.startsWith('/refrezing/logsheet') || url.startsWith('/refrezing-logsheet')) && !url.includes('/history');
+    const isRefrezingHistoryActive   = url.includes('/refrezing/history') || url.includes('/refrezing-logsheet/history');
+    const isRefrezingSettingActive   = url.startsWith('/refrezing/settings');
+    const isRefrezingGroupActive     = isRefrezingDashboardActive || isRefrezingLogsheetActive || isRefrezingHistoryActive || isRefrezingSettingActive;
+
     const [iqfOpen, setIqfOpen] = useState(true);
-    const [refrezingOpen, setRefrezingOpen] = useState(false);
+    const [refrezingOpen, setRefrezingOpen] = useState(isRefrezingGroupActive);
 
     // Active state helpers
     const isAnomalyActive = url.startsWith('/deteksi-anomali');
@@ -20,11 +26,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
     const isIqfLogsheetActive  = (url.startsWith('/logsheet-iqf') || url.startsWith('/iqf-logsheet')) && !url.includes('/history');
     const isIqfHistoryActive   = url.includes('/iqf-logsheet/history');
     const isIqfGroupActive     = isIqfDashboardActive || isIqfLogsheetActive || isIqfHistoryActive;
-
-    const isRefrezingDashboardActive = url.startsWith('/refrezing/dashboard');
-    const isRefrezingLogsheetActive  = (url.startsWith('/refrezing/logsheet') || url.startsWith('/refrezing-logsheet')) && !url.includes('/history');
-    const isRefrezingHistoryActive   = url.includes('/refrezing/history') || url.includes('/refrezing-logsheet/history');
-    const isRefrezingGroupActive     = isRefrezingDashboardActive || isRefrezingLogsheetActive || isRefrezingHistoryActive;
 
     const isUserAdminActive = url.startsWith('/admin/users');
 
@@ -204,6 +205,20 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
                             >
                                 <ClipboardList className="w-3.5 h-3.5 shrink-0" />
                                 {!isCollapsed && <span className="truncate">Logsheet Harian</span>}
+                            </Link>
+
+                            <Link
+                                href="/refrezing/settings"
+                                onClick={handleItemClick}
+                                className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all text-decoration-none ${
+                                    isRefrezingSettingActive
+                                        ? 'bg-[#0284c7] text-white shadow-xs font-black'
+                                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                                }`}
+                                title="Setting Refrezing Time"
+                            >
+                                <Settings className="w-3.5 h-3.5 shrink-0" />
+                                {!isCollapsed && <span className="truncate">Setting Refrezing Time</span>}
                             </Link>
                         </div>
                     )}

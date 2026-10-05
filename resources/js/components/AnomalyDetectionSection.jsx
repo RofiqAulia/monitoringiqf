@@ -50,7 +50,7 @@ function LiveClockFooter({ className = "text-xs font-bold text-slate-700 trackin
     );
 }
 
-export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi LossTime & Rekap Shift IQF" }) {
+export default function AnomalyDetectionSection({ anomalyData, refrezingSettings, title = "Deteksi LossTime & Rekap Shift IQF" }) {
     const [selectedTab, setSelectedTab] = useState('ALL'); // 'ALL', 'IQF 1', 'IQF 2'
     const [printingMachine, setPrintingMachine] = useState(null); // null, 'IQF 1', 'IQF 2'
 
@@ -238,10 +238,24 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
             return Number.isInteger(num) ? num.toString() : num.toFixed(1);
         };
 
-        const siomayResepVal = (siomayTotalLoyang * (290/22)) / 60;
-        const pentolResepVal = (pentolTotalLoyang * (290/22)) / 60;
-        const lumpiaResepVal = lumpiaTotalKeranjang * 1.5;
-        const adonanResepVal = (adonanTotalSolid * 71)/60;
+        const st = refrezingSettings || effectiveData?.refrezing_settings || {};
+        const s_mult = Number(st.siomay_multiplier) || 290;
+        const s_div_l = Number(st.siomay_divider_loyang) || 22;
+        const s_div_m = Number(st.siomay_divider_min) || 60;
+
+        const p_mult = Number(st.pentol_multiplier) || 290;
+        const p_div_l = Number(st.pentol_divider_loyang) || 22;
+        const p_div_m = Number(st.pentol_divider_min) || 60;
+
+        const l_mult = Number(st.lumpia_multiplier) || 1.5;
+
+        const a_mult = Number(st.adonan_multiplier) || 71;
+        const a_div_m = Number(st.adonan_divider_min) || 60;
+
+        const siomayResepVal = (siomayTotalLoyang * (s_mult / s_div_l)) / s_div_m;
+        const pentolResepVal = (pentolTotalLoyang * (p_mult / p_div_l)) / p_div_m;
+        const lumpiaResepVal = lumpiaTotalKeranjang * l_mult;
+        const adonanResepVal = (adonanTotalSolid * a_mult) / a_div_m;
 
         const siomayResepMins = formatMins(siomayResepVal);
         const pentolResepMins = formatMins(pentolResepVal);

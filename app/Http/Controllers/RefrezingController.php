@@ -485,6 +485,7 @@ class RefrezingController extends Controller
             'messages'                  => $anomalyMessages,
             'downtime_entries'          => $downtimeEntries,
             'matrix_rows'               => $matrixRows,
+            'refrezing_settings'        => \App\Models\RefrezingSetting::getSettings(),
         ];
 
         return response()->json([

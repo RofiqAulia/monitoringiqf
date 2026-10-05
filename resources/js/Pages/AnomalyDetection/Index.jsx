@@ -3,7 +3,7 @@ import { Head } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import AnomalyDetectionSection from '@/components/AnomalyDetectionSection';
 
-export default function Index({ iqfAnomaly, refrezingAnomaly }) {
+export default function Index({ iqfAnomaly, refrezingAnomaly, refrezingSettings }) {
     return (
         <AppLayout>
             <Head title="Deteksi Anomali & LossTime" />
@@ -16,6 +16,7 @@ export default function Index({ iqfAnomaly, refrezingAnomaly }) {
 
                 <AnomalyDetectionSection
                     anomalyData={refrezingAnomaly}
+                    refrezingSettings={refrezingSettings}
                     title="Deteksi LossTime & Anomali Refrezing System"
                     apiEndpoint="/refrezing/dashboard/stats"
                 />
