@@ -50,7 +50,7 @@ function LiveClockFooter({ className = "text-xs font-bold text-slate-700 trackin
     );
 }
 
-export default function AnomalyDetectionSection({ anomalyData, refrezingSettings, title = "Deteksi LossTime & Rekap Shift IQF" }) {
+export default function AnomalyDetectionSection({ anomalyData, refrezingSettings, title = "Deteksi LossTime & Rekap Shift IQF", apiEndpoint = "/dashboard/stats" }) {
     const [selectedTab, setSelectedTab] = useState('ALL'); // 'ALL', 'IQF 1', 'IQF 2'
     const [printingMachine, setPrintingMachine] = useState(null); // null, 'IQF 1', 'IQF 2'
 
@@ -70,7 +70,7 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         const shiftConfig = SHIFT_MAP[shift] || SHIFT_MAP['all'];
         setFilterLoading(true);
         try {
-            const res = await axios.get('/dashboard/stats', {
+            const res = await axios.get(apiEndpoint, {
                 params: {
                     date: date,
                     shift: shift,
@@ -85,7 +85,7 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         } finally {
             setFilterLoading(false);
         }
-    }, []);
+    }, [apiEndpoint]);
 
     /** Auto-fetch ketika filter berubah */
     useEffect(() => {
@@ -239,18 +239,20 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         };
 
         const st = refrezingSettings || effectiveData?.refrezing_settings || {};
-        const s_mult = Number(st.siomay_multiplier) || 290;
-        const s_div_l = Number(st.siomay_divider_loyang) || 22;
-        const s_div_m = Number(st.siomay_divider_min) || 60;
+        const getVal = (val, fallback) => (val !== undefined && val !== null && val !== '') ? Number(val) : fallback;
 
-        const p_mult = Number(st.pentol_multiplier) || 290;
-        const p_div_l = Number(st.pentol_divider_loyang) || 22;
-        const p_div_m = Number(st.pentol_divider_min) || 60;
+        const s_mult  = getVal(st.siomay_multiplier, 290);
+        const s_div_l = getVal(st.siomay_divider_loyang, 22);
+        const s_div_m = getVal(st.siomay_divider_min, 60);
 
-        const l_mult = Number(st.lumpia_multiplier) || 1.5;
+        const p_mult  = getVal(st.pentol_multiplier, 290);
+        const p_div_l = getVal(st.pentol_divider_loyang, 22);
+        const p_div_m = getVal(st.pentol_divider_min, 60);
 
-        const a_mult = Number(st.adonan_multiplier) || 71;
-        const a_div_m = Number(st.adonan_divider_min) || 60;
+        const l_mult  = getVal(st.lumpia_multiplier, 1.5);
+
+        const a_mult  = getVal(st.adonan_multiplier, 71);
+        const a_div_m = getVal(st.adonan_divider_min, 60);
 
         const siomayResepVal = (siomayTotalLoyang * (s_mult / s_div_l)) / s_div_m;
         const pentolResepVal = (pentolTotalLoyang * (p_mult / p_div_l)) / p_div_m;

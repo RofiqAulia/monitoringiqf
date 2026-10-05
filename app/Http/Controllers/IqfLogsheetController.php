@@ -501,6 +501,7 @@ class IqfLogsheetController extends Controller
             'unaccounted_minutes'       => $overallUnaccounted,
             'status'                    => $overallStatus,
             'messages'                  => array_merge($anomalyDetectionByMachine['IQF 1']['messages'] ?? [], $anomalyDetectionByMachine['IQF 2']['messages'] ?? []),
+            'refrezing_settings'        => \App\Models\RefrezingSetting::getSettings(),
         ];
 
         return response()->json([
