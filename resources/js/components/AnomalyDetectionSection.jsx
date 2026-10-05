@@ -889,16 +889,6 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                     </div>
                 </div>
 
-                {/* Loading Overlay */}
-                {filterLoading && (
-                    <div className="flex items-center justify-center py-16">
-                        <div className="flex flex-col items-center gap-3">
-                            <Loader2 className="w-8 h-8 text-cyan-600 animate-spin" />
-                            <span className="text-xs font-bold text-slate-400">Memuat data losstime...</span>
-                        </div>
-                    </div>
-                )}
-
                 {/* Grid Display for IQF 1 & IQF 2 */}
                 {!filterLoading && (
                 <div className="space-y-6">
