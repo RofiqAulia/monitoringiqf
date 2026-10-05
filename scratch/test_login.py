@@ -5,32 +5,27 @@ import re
 import html
 
 session = requests.Session()
+
+# 1. Get login page and tokens
 r1 = session.get('https://monitoringiqf.my.id/login')
 xsrf = urllib.parse.unquote(session.cookies.get('XSRF-TOKEN'))
-
 decoded_text = html.unescape(r1.text)
-match = re.search(r'"version":"([^"]+)"', decoded_text)
-version = match.group(1) if match else ''
+version = re.search(r'"version":"([^"]+)"', decoded_text).group(1)
 
-headers = {
-    'Content-Type': 'application/json',
-    'X-Inertia': 'true',
-    'X-Inertia-Version': version,
-    'X-XSRF-TOKEN': xsrf,
-    'Referer': 'https://monitoringiqf.my.id/login'
-}
+# 2. Get /deteksi-anomali directly as unauthenticated and authenticated
+print("=== GET /deteksi-anomali (Unauthenticated) ===")
+r_unauth = session.get('https://monitoringiqf.my.id/deteksi-anomali', headers={'X-Inertia': 'true', 'X-Inertia-Version': version})
+print("Status:", r_unauth.status_code)
+print("Headers:", dict(r_unauth.headers))
+print("Content snippet:", r_unauth.text[:400])
 
-payload = {
-    'email': 'mrofiqaulia@gmail.com',
-    'password': 'password123',
-    'remember': False
-}
-
-r2 = session.post('https://monitoringiqf.my.id/login', json=payload, headers=headers)
-print('POST /login JSON Props:')
-try:
-    data = json.loads(r2.text)
-    print(json.dumps(data.get('props', {}), indent=2))
-except Exception as e:
-    print('Failed to parse JSON:', e)
-    print(r2.text)
+# 3. Test GET /deteksi-anomali as normal HTML browser request
+print("\n=== GET /deteksi-anomali (HTML Browser Direct Request) ===")
+r_html = session.get('https://monitoringiqf.my.id/deteksi-anomali')
+print("Status:", r_html.status_code)
+print("Headers:", dict(r_html.headers))
+if r_html.status_code != 200:
+    print("Full HTML Error Response:")
+    print(r_html.text)
+else:
+    print("HTML Snippet:", r_html.text[:500])

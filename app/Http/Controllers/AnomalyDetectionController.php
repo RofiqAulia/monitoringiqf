@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -14,7 +15,6 @@ class AnomalyDetectionController extends Controller
         $todayWib = Carbon::now('Asia/Jakarta')->format('Y-m-d');
         $queryDate = $request->input('date', $todayWib);
 
-        // Compute current shift if not passed
         $nowWib = Carbon::now('Asia/Jakarta');
         $currentHour = (int) $nowWib->format('H');
         $defaultShift = 1;
@@ -28,25 +28,33 @@ class AnomalyDetectionController extends Controller
 
         $shift = (int) $request->input('shift', $defaultShift);
 
-        // Fetch IQF stats for anomaly detection
-        $iqfController = new IqfLogsheetController();
-        $iqfDashboardReq = new Request([
-            'date'  => $queryDate,
-            'shift' => $shift,
-        ]);
+        $iqfData = [];
+        try {
+            $iqfController = new IqfLogsheetController();
+            $iqfDashboardReq = new Request([
+                'date'  => $queryDate,
+                'shift' => $shift,
+            ]);
 
-        $iqfRes = $iqfController->dashboardStats($iqfDashboardReq);
-        $iqfData = $iqfRes->getData(true);
+            $iqfRes = $iqfController->dashboardStats($iqfDashboardReq);
+            $iqfData = $iqfRes->getData(true);
+        } catch (\Throwable $e) {
+            Log::error('IQF Anomaly error: ' . $e->getMessage());
+        }
 
-        // Fetch Refrezing stats for anomaly detection
-        $refrezingController = new RefrezingController();
-        $refrezingDashboardReq = new Request([
-            'date'  => $queryDate,
-            'shift' => $shift,
-        ]);
+        $refrezingData = [];
+        try {
+            $refrezingController = new RefrezingController();
+            $refrezingDashboardReq = new Request([
+                'date'  => $queryDate,
+                'shift' => $shift,
+            ]);
 
-        $refrezingRes = $refrezingController->dashboardStats($refrezingDashboardReq);
-        $refrezingData = $refrezingRes->getData(true);
+            $refrezingRes = $refrezingController->dashboardStats($refrezingDashboardReq);
+            $refrezingData = $refrezingRes->getData(true);
+        } catch (\Throwable $e) {
+            Log::error('Refrezing Anomaly error: ' . $e->getMessage());
+        }
 
         return Inertia::render('AnomalyDetection/Index', [
             'filters' => [
