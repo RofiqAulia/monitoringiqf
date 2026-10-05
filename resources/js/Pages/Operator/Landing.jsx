@@ -285,7 +285,7 @@ export default function Landing({ latestEntries }) {
                         <label className="text-slate-500 font-black uppercase text-[9px] md:text-xs mb-2 md:mb-6 tracking-widest md:tracking-[0.2em] flex flex-col md:flex-row items-center gap-1 md:gap-2 text-center leading-tight">
                             <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-pink-500 animate-pulse"></span>
                             Jml <span className="hidden md:inline"> {product === 'adonan_pangsit' ? 'Solid' : product === 'lumpia' ? 'Keranjang' : 'Loyang'}</span>
-                            <span className="md:hidden"> {product === 'adonan_pangsit' ? 'Solid' : product === 'lumpia' ? 'Pack' : 'Loyng'}</span>
+                            <span className="md:hidden"> {product === 'adonan_pangsit' ? 'Solid' : product === 'lumpia' ? 'KERANJG' : 'LOYANG'}</span>
                         </label>
                         <input
                             type="number"
