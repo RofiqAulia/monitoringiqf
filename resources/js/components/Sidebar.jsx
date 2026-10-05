@@ -18,12 +18,12 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
     const isIqfDashboardActive = url === '/dashboard' || url === '/' || url.startsWith('/dashboard?');
     const isIqfLogsheetActive  = (url.startsWith('/logsheet-iqf') || url.startsWith('/iqf-logsheet')) && !url.includes('/history');
     const isIqfHistoryActive   = url.includes('/iqf-logsheet/history');
-    const isIqfGroupActive     = isIqfDashboardActive || isIqfLogsheetActive || isIqfHistoryActive;
+    const isIqfGroupActive     = isIqfLogsheetActive || isIqfHistoryActive;
 
     const isRefrezingDashboardActive = url.startsWith('/refrezing/dashboard');
     const isRefrezingLogsheetActive  = (url.startsWith('/refrezing/logsheet') || url.startsWith('/refrezing-logsheet')) && !url.includes('/history');
     const isRefrezingHistoryActive   = url.includes('/refrezing/history') || url.includes('/refrezing-logsheet/history');
-    const isRefrezingGroupActive     = isRefrezingDashboardActive || isRefrezingLogsheetActive || isRefrezingHistoryActive;
+    const isRefrezingGroupActive     = isRefrezingLogsheetActive || isRefrezingHistoryActive;
 
     const isUserAdminActive = url.startsWith('/admin/users');
 
@@ -65,13 +65,13 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
                     href="/dashboard"
                     onClick={handleItemClick}
                     className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-150 text-decoration-none ${
-                        isIqfDashboardActive && !iqfOpen
+                        isIqfDashboardActive
                             ? 'bg-[#0284c7] text-white shadow-xs'
                             : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                     }`}
                     title="Dashboard Kontrol"
                 >
-                    <LayoutDashboard className={`w-4 h-4 shrink-0 ${isIqfDashboardActive && !iqfOpen ? 'text-white' : 'text-slate-500'}`} />
+                    <LayoutDashboard className={`w-4 h-4 shrink-0 ${isIqfDashboardActive ? 'text-white' : 'text-slate-500'}`} />
                     {!isCollapsed && <span className="truncate">Dashboard Kontrol</span>}
                 </Link>
 
@@ -155,20 +155,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
                     {(iqfOpen || isCollapsed) && (
                         <div className={`space-y-1 ${!isCollapsed ? 'pl-4 pr-1 border-l-2 border-slate-100 ml-5 my-1' : ''}`}>
                             <Link
-                                href="/dashboard"
-                                onClick={handleItemClick}
-                                className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all text-decoration-none ${
-                                    isIqfDashboardActive
-                                        ? 'bg-[#0284c7] text-white shadow-xs font-black'
-                                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                                }`}
-                                title="Dashboard IQF"
-                            >
-                                <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
-                                {!isCollapsed && <span className="truncate">Dashboard IQF</span>}
-                            </Link>
-
-                            <Link
                                 href="/logsheet-iqf"
                                 onClick={handleItemClick}
                                 className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all text-decoration-none ${
@@ -222,20 +208,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
 
                     {(refrezingOpen || isCollapsed) && (
                         <div className={`space-y-1 ${!isCollapsed ? 'pl-4 pr-1 border-l-2 border-slate-100 ml-5 my-1' : ''}`}>
-                            <Link
-                                href="/refrezing/dashboard"
-                                onClick={handleItemClick}
-                                className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all text-decoration-none ${
-                                    isRefrezingDashboardActive
-                                        ? 'bg-[#0284c7] text-white shadow-xs font-black'
-                                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                                }`}
-                                title="Refrezing Dashboard"
-                            >
-                                <Snowflake className="w-3.5 h-3.5 shrink-0" />
-                                {!isCollapsed && <span className="truncate">Dashboard</span>}
-                            </Link>
-
                             <Link
                                 href="/refrezing/logsheet"
                                 onClick={handleItemClick}
