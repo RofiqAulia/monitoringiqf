@@ -867,54 +867,9 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                 </button>
                             )}
                         </div>
-
-                        {/* Status Badge */}
-                        <div className="flex items-center gap-2 shrink-0">
-                            {filterLoading ? (
-                                <span className="flex items-center gap-1.5 text-xs font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-3 py-1.5 rounded-full">
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    Memuat...
-                                </span>
-                            ) : !isDefaultFilter ? (
-                                <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full">
-                                    Menampilkan data: {new Date(filterDate + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })} — {SHIFT_MAP[filterShift]?.label || 'Semua Shift'}
-                                </span>
-                            ) : (
-                                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    Data Hari Ini (Live)
-                                </span>
-                            )}
-                        </div>
                     </div>
                 </div>
 
-                {/* Loading Overlay */}
-                {filterLoading && (
-                    <div className="flex items-center justify-center py-16">
-                        <div className="flex flex-col items-center gap-3">
-                            <Loader2 className="w-8 h-8 text-cyan-600 animate-spin" />
-                            <span className="text-xs font-bold text-slate-400">Memuat data losstime...</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Grid Display for IQF 1 & IQF 2 */}
-                {!filterLoading && (
-                <div className="space-y-6">
-                    {(selectedTab === 'ALL' || selectedTab === 'IQF 1') && renderMachineCard('IQF 1', iqf1Data || effectiveData)}
-                    {(selectedTab === 'ALL' || selectedTab === 'IQF 2') && renderMachineCard('IQF 2', iqf2Data || effectiveData)}
-                </div>
-                )}
-
-                {/* ── Footer: Tanggal & Jam Real-Time ── */}
-                <div className="bg-slate-50/80 border border-slate-200/80 rounded-2xl px-5 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Waktu Server (WIB)</span>
-                    </div>
-                    <LiveClockFooter />
-                </div>
             </div>
         </>
     );
