@@ -101,11 +101,7 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
     const effectiveData = localAnomalyData || anomalyData;
 
     if (!effectiveData && !filterLoading) {
-        return (
-            <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 text-center text-slate-400 text-xs font-semibold">
-                Memuat data deteksi losstime...
-            </div>
-        );
+        return null;
     }
 
     // Extract per-machine data if available
