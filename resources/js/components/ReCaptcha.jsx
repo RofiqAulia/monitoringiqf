@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Shield, AlertCircle, RefreshCw } from 'lucide-react';
 
-const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LdXGL4tAAAAAOvpEnVcZfsPTiH_9NvYQZF65dHg';
+const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LdVq98tAAAAADllSy1JqCkF8YFDplr9Fgr21oIY';
 
 export default function ReCaptcha({ onVerify, error }) {
     const containerRef = useRef(null);
