@@ -217,7 +217,6 @@ class RefrezingController extends Controller
                     'duration_mins' => $durMins,
                 ];
             }
-            }
         }
 
         // ── Calculate Efficiency & Changeover Stats per Machine ──────────
