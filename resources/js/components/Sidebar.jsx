@@ -15,6 +15,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
     const [refrezingOpen, setRefrezingOpen] = useState(false);
 
     // Active state helpers
+    const isAnomalyActive = url.startsWith('/deteksi-anomali');
     const isIqfDashboardActive = url === '/dashboard' || url === '/' || url.startsWith('/dashboard?');
     const isIqfLogsheetActive  = (url.startsWith('/logsheet-iqf') || url.startsWith('/iqf-logsheet')) && !url.includes('/history');
     const isIqfHistoryActive   = url.includes('/iqf-logsheet/history');
@@ -68,6 +69,21 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
                 >
                     <LayoutDashboard className={`w-4 h-4 shrink-0 ${isIqfDashboardActive && !iqfOpen ? 'text-white' : 'text-slate-500'}`} />
                     {!isCollapsed && <span className="truncate">Dashboard Kontrol</span>}
+                </Link>
+
+                {/* DETEKSI ANOMALI & LOSSTIME */}
+                <Link
+                    href="/deteksi-anomali"
+                    onClick={handleItemClick}
+                    className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-150 text-decoration-none ${
+                        isAnomalyActive
+                            ? 'bg-[#0284c7] text-white shadow-xs font-black'
+                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
+                    title="Deteksi Anomali & LossTime"
+                >
+                    <AlertCircle className={`w-4 h-4 shrink-0 ${isAnomalyActive ? 'text-white' : 'text-amber-500'}`} />
+                    {!isCollapsed && <span className="truncate">Deteksi Anomali</span>}
                 </Link>
 
                 {/* IQF PRODUCTION GROUP (Expandable) */}

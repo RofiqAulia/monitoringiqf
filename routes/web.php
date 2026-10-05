@@ -65,6 +65,9 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('IqfLogsheet/Dashboard');
     })->name('dashboard');
 
+    // Standalone Deteksi Anomali Page
+    Route::get('/deteksi-anomali', [\App\Http\Controllers\AnomalyDetectionController::class, 'index'])->name('anomali.index');
+
     // Dashboard stats API (admin-accessible version of /iqf-kiosk/stats)
     Route::get('/dashboard/stats', [\App\Http\Controllers\IqfLogsheetController::class, 'dashboardStats'])->name('dashboard.stats');
 

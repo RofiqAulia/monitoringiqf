@@ -536,12 +536,6 @@ export default function RefrezingDashboard() {
                 </div>
             </div>
 
-            {/* ── ANOMALY DETECTION & SHIFT RECAP SECTION ─────────────────── */}
-            <AnomalyDetectionSection
-                anomalyData={stats?.anomaly_detection}
-                title="Deteksi Anomali & Rekap Shift Refrezing"
-            />
-
         </div>
     );
 }
