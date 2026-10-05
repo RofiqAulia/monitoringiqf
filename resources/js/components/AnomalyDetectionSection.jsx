@@ -809,17 +809,6 @@ export default function AnomalyDetectionSection({ anomalyData, title = "Deteksi 
                                     </button>
                                 ))}
                             </div>
-
-                            {/* Print Button */}
-                            <button
-                                type="button"
-                                onClick={handlePrintAnomaly}
-                                className="h-9 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer border-0 shrink-0"
-                                title="Cetak Laporan Losstime"
-                            >
-                                <Printer className="w-3.5 h-3.5" />
-                                <span>Cetak Laporan</span>
-                            </button>
                         </div>
                     </div>
 
