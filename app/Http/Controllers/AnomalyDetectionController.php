@@ -17,23 +17,34 @@ class AnomalyDetectionController extends Controller
 
         $nowWib = Carbon::now('Asia/Jakarta');
         $currentHour = (int) $nowWib->format('H');
-        $defaultShift = 1;
-        if ($currentHour >= 7 && $currentHour < 15) {
+        // Selaraskan boundary deteksi shift dengan shift map: 8/16/00
+        if ($currentHour >= 8 && $currentHour < 16) {
             $defaultShift = 1;
-        } elseif ($currentHour >= 15 && $currentHour < 23) {
+        } elseif ($currentHour >= 16 && $currentHour <= 23) {
             $defaultShift = 2;
         } else {
+            // 00:00 - 07:59 = Shift 3
             $defaultShift = 3;
         }
 
         $shift = (int) $request->input('shift', $defaultShift);
 
+        // Mapping shift ke time range yang benar
+        $shiftTimeMap = [
+            1 => ['from' => '08:00', 'to' => '16:00'],
+            2 => ['from' => '16:00', 'to' => '00:00'],
+            3 => ['from' => '00:00', 'to' => '08:00'],
+        ];
+        $shiftTimes = $shiftTimeMap[$shift] ?? $shiftTimeMap[1];
+
         $iqfData = [];
         try {
             $iqfController = new IqfLogsheetController();
             $iqfDashboardReq = new Request([
-                'date'  => $queryDate,
-                'shift' => $shift,
+                'date'      => $queryDate,
+                'shift'     => $shift,
+                'from_time' => $shiftTimes['from'],
+                'to_time'   => $shiftTimes['to'],
             ]);
 
             $iqfRes = $iqfController->dashboardStats($iqfDashboardReq);
@@ -46,8 +57,10 @@ class AnomalyDetectionController extends Controller
         try {
             $refrezingController = new RefrezingController();
             $refrezingDashboardReq = new Request([
-                'date'  => $queryDate,
-                'shift' => $shift,
+                'date'      => $queryDate,
+                'shift'     => $shift,
+                'from_time' => $shiftTimes['from'],
+                'to_time'   => $shiftTimes['to'],
             ]);
 
             $refrezingRes = $refrezingController->dashboardStats($refrezingDashboardReq);

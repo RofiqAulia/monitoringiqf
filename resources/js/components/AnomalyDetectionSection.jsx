@@ -50,6 +50,24 @@ function LiveClockFooter({ className = "text-xs font-bold text-slate-700 trackin
     );
 }
 
+/** Hitung elapsed minutes dari awal shift sampai sekarang (WIB) */
+function calcLiveElapsedMinutes(shift) {
+    const shiftStart = SHIFT_MAP[shift];
+    if (!shiftStart) return null;
+    const now = new Date();
+    const wib = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+    const nowMins = wib.getHours() * 60 + wib.getMinutes();
+    const [fH, fM] = shiftStart.from.split(':').map(Number);
+    const fromMins = fH * 60 + fM;
+    const [tH, tM] = shiftStart.to.split(':').map(Number);
+    let toMins = tH * 60 + tM;
+    if (shiftStart.to === '00:00' && shiftStart.from !== '00:00') toMins = 1440;
+    const totalShift = toMins > fromMins ? toMins - fromMins : toMins + 1440 - fromMins;
+    let elapsed = nowMins >= fromMins ? nowMins - fromMins : nowMins + 1440 - fromMins;
+    elapsed = Math.max(0, Math.min(totalShift, elapsed));
+    return elapsed;
+}
+
 export default function AnomalyDetectionSection({ anomalyData, refrezingSettings, title = "Deteksi LossTime & Rekap Shift IQF", apiEndpoint = "/dashboard/stats" }) {
     const [selectedTab, setSelectedTab] = useState('ALL'); // 'ALL', 'IQF 1', 'IQF 2'
     const [printingMachine, setPrintingMachine] = useState(null); // null, 'IQF 1', 'IQF 2'
@@ -61,6 +79,10 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
     const [filterShift, setFilterShift] = useState(currentShift);
     const [localAnomalyData, setLocalAnomalyData] = useState(null);
     const [filterLoading, setFilterLoading] = useState(false);
+    const [lastRefreshed, setLastRefreshed] = useState(null);
+
+    // Live elapsed minutes (updates every second)
+    const [liveElapsed, setLiveElapsed] = useState(() => calcLiveElapsedMinutes(currentShift));
 
     /** Cek apakah filter sesuai dengan data default (hari ini + shift aktif) */
     const isDefaultFilter = filterDate === todayStr && filterShift === currentShift;
@@ -84,21 +106,40 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
             setLocalAnomalyData(null);
         } finally {
             setFilterLoading(false);
+            setLastRefreshed(new Date());
         }
     }, [apiEndpoint]);
 
-    /** Auto-fetch ketika filter berubah */
+    /** Auto-fetch ketika filter berubah — selalu fetch untuk data akurat */
     useEffect(() => {
-        // Jika filter default, gunakan data dari prop parent
-        if (isDefaultFilter) {
-            setLocalAnomalyData(null);
-            return;
-        }
         fetchAnomalyData(filterDate, filterShift);
     }, [filterDate, filterShift]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    /** Data efektif: dari fetch lokal jika filter aktif, atau dari prop parent */
+    /** Auto-polling: refetch setiap 30 detik jika menampilkan data hari ini */
+    useEffect(() => {
+        const isToday = filterDate === todayStr;
+        if (!isToday) return;
+        const interval = setInterval(() => {
+            fetchAnomalyData(filterDate, filterShift);
+        }, 30000);
+        return () => clearInterval(interval);
+    }, [filterDate, filterShift, todayStr]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    /** Live elapsed minutes ticker — update setiap detik untuk shift aktif hari ini */
+    useEffect(() => {
+        const isToday = filterDate === todayStr;
+        if (!isToday || filterShift === 'all') return;
+        const tick = () => setLiveElapsed(calcLiveElapsedMinutes(filterShift));
+        tick();
+        const timer = setInterval(tick, 1000);
+        return () => clearInterval(timer);
+    }, [filterDate, filterShift, todayStr]);
+
+    /** Data efektif: dari fetch lokal jika tersedia, atau dari prop parent */
     const effectiveData = localAnomalyData || anomalyData;
+
+    /** Flag untuk menandai apakah sedang menampilkan data live hari ini */
+    const isLiveToday = filterDate === todayStr && filterShift !== 'all';
 
     if (!effectiveData && !filterLoading) {
         return null;
@@ -135,16 +176,28 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
 
         const {
             active_minutes_by_product = {},
-            total_active_dimsum_mins = 0,
-            downtime_minutes = 0,
-            total_recorded_minutes = 0,
+            total_active_dimsum_mins: total_active_dimsum_mins_raw = 0,
+            downtime_minutes: downtime_minutes_raw = 0,
+            total_recorded_minutes: total_recorded_minutes_raw = 0,
             target_shift_minutes = 480,
-            elapsed_shift_minutes = target_shift_minutes,
-            unaccounted_minutes = 0,
-            status = 'normal',
+            elapsed_shift_minutes: serverElapsedMins = target_shift_minutes,
+            unaccounted_minutes: serverUnaccounted = 0,
+            status: serverStatus = 'normal',
             downtime_entries = [],
             matrix_rows = [],
         } = mData;
+
+        // Override elapsed dengan live elapsed jika menampilkan data hari ini
+        const elapsed_shift_minutes = (isLiveToday && liveElapsed !== null) ? liveElapsed : serverElapsedMins;
+        // Alias nama untuk kompatibilitas
+        const total_active_dimsum_mins = total_active_dimsum_mins_raw;
+        const downtime_minutes = downtime_minutes_raw;
+        const total_recorded_minutes = total_recorded_minutes_raw;
+        // Recalculate unaccounted based on live elapsed
+        const unaccounted_minutes = (isLiveToday && liveElapsed !== null)
+            ? Math.max(0, elapsed_shift_minutes - total_active_dimsum_mins - downtime_minutes)
+            : serverUnaccounted;
+        const status = (unaccounted_minutes > 30) ? 'anomaly' : (unaccounted_minutes > 0 ? 'warning' : serverStatus);
 
         const pentolMins = active_minutes_by_product.pentol ?? 0;
         const siomayMins = active_minutes_by_product.siomay ?? 0;
