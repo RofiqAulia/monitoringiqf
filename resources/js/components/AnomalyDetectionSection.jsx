@@ -443,11 +443,11 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         const lumpiaRow2Text = selectedMethod === 'METODE_1' ? `${lumpiaResepMins} m/real resep` : `${formatQty(lumpiaTargetQty)} K target resep`;
         const adonanRow2Text = selectedMethod === 'METODE_1' ? `${adonanResepMins} m/real resep` : `${formatQty(adonanTargetQty)} S target resep`;
 
-        const totalRow3Text  = selectedMethod === 'METODE_1' ? `${totalSelisih} menit` : `${formatSelisihQty(totalSelisihQty)} selisih`;
-        const siomayRow3Text = selectedMethod === 'METODE_1' ? `${siomaySelisih} m/loss time` : `${formatSelisihQty(siomaySelisihQty)} L selisih`;
-        const pentolRow3Text = selectedMethod === 'METODE_1' ? `${pentolSelisih} m/loss time` : `${formatSelisihQty(pentolSelisihQty)} L selisih`;
-        const lumpiaRow3Text = selectedMethod === 'METODE_1' ? `${lumpiaSelisih} m/loss time` : `${formatSelisihQty(lumpiaSelisihQty)} K selisih`;
-        const adonanRow3Text = selectedMethod === 'METODE_1' ? `${adonanSelisih} m/loss time` : `${formatSelisihQty(adonanSelisihQty)} S selisih`;
+        const totalRow3Text  = selectedMethod === 'METODE_1' ? `${totalSelisih} menit` : `${formatSelisihQty(totalSelisihQty)} selisih (${formatSelisih(-totalSelisihVal)} m)`;
+        const siomayRow3Text = selectedMethod === 'METODE_1' ? `${siomaySelisih} m/loss time` : `${formatSelisihQty(siomaySelisihQty)} L selisih (${formatSelisih(-siomaySelisihVal)} m)`;
+        const pentolRow3Text = selectedMethod === 'METODE_1' ? `${pentolSelisih} m/loss time` : `${formatSelisihQty(pentolSelisihQty)} L selisih (${formatSelisih(-pentolSelisihVal)} m)`;
+        const lumpiaRow3Text = selectedMethod === 'METODE_1' ? `${lumpiaSelisih} m/loss time` : `${formatSelisihQty(lumpiaSelisihQty)} K selisih (${formatSelisih(-lumpiaSelisihVal)} m)`;
+        const adonanRow3Text = selectedMethod === 'METODE_1' ? `${adonanSelisih} m/loss time` : `${formatSelisihQty(adonanSelisihQty)} S selisih (${formatSelisih(-adonanSelisihVal)} m)`;
 
         // Define PrimeReact ColumnGroup Header
         const headerGroup = (
