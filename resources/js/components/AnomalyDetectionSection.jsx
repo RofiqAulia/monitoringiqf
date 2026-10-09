@@ -437,17 +437,17 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         const durationLabel = selectedMethod === 'METODE_1' ? 'm/durasi input' : 'm/durasi berjalan';
 
         // Header Row 2 & Row 3 Labels depending on selectedMethod
-        const totalRow2Text  = selectedMethod === 'METODE_1' ? `${totalResepMins} menit` : `${formatQty(totalTargetQty)} target`;
-        const siomayRow2Text = selectedMethod === 'METODE_1' ? `${siomayResepMins} m/real resep` : `${formatQty(siomayTargetQty)} L target resep`;
-        const pentolRow2Text = selectedMethod === 'METODE_1' ? `${pentolResepMins} m/real resep` : `${formatQty(pentolTargetQty)} L target resep`;
-        const lumpiaRow2Text = selectedMethod === 'METODE_1' ? `${lumpiaResepMins} m/real resep` : `${formatQty(lumpiaTargetQty)} K target resep`;
-        const adonanRow2Text = selectedMethod === 'METODE_1' ? `${adonanResepMins} m/real resep` : `${formatQty(adonanTargetQty)} S target resep`;
+        const totalRow2Text  = selectedMethod === 'METODE_1' ? `${totalResepMins} menit` : `${formatQty(totalTargetQty)} target resep`;
+        const siomayRow2Text = selectedMethod === 'METODE_1' ? `${siomayResepMins} m/real resep` : `${formatQty(siomayTargetQty)} loyang target resep`;
+        const pentolRow2Text = selectedMethod === 'METODE_1' ? `${pentolResepMins} m/real resep` : `${formatQty(pentolTargetQty)} loyang target resep`;
+        const lumpiaRow2Text = selectedMethod === 'METODE_1' ? `${lumpiaResepMins} m/real resep` : `${formatQty(lumpiaTargetQty)} keranjang target resep`;
+        const adonanRow2Text = selectedMethod === 'METODE_1' ? `${adonanResepMins} m/real resep` : `${formatQty(adonanTargetQty)} solid target resep`;
 
-        const totalRow3Text  = selectedMethod === 'METODE_1' ? `${totalSelisih} menit` : `${formatSelisihQty(totalSelisihQty)} selisih (${formatSelisih(-totalSelisihVal)} m)`;
-        const siomayRow3Text = selectedMethod === 'METODE_1' ? `${siomaySelisih} m/loss time` : `${formatSelisihQty(siomaySelisihQty)} L selisih (${formatSelisih(-siomaySelisihVal)} m)`;
-        const pentolRow3Text = selectedMethod === 'METODE_1' ? `${pentolSelisih} m/loss time` : `${formatSelisihQty(pentolSelisihQty)} L selisih (${formatSelisih(-pentolSelisihVal)} m)`;
-        const lumpiaRow3Text = selectedMethod === 'METODE_1' ? `${lumpiaSelisih} m/loss time` : `${formatSelisihQty(lumpiaSelisihQty)} K selisih (${formatSelisih(-lumpiaSelisihVal)} m)`;
-        const adonanRow3Text = selectedMethod === 'METODE_1' ? `${adonanSelisih} m/loss time` : `${formatSelisihQty(adonanSelisihQty)} S selisih (${formatSelisih(-adonanSelisihVal)} m)`;
+        const totalRow3Text  = selectedMethod === 'METODE_1' ? `${totalSelisih} menit` : `selisih ${formatSelisihQty(totalSelisihQty)} produk (${formatSelisih(-totalSelisihVal)} menit)`;
+        const siomayRow3Text = selectedMethod === 'METODE_1' ? `${siomaySelisih} m/loss time` : `selisih ${formatSelisihQty(siomaySelisihQty)} loyang (${formatSelisih(-siomaySelisihVal)} menit)`;
+        const pentolRow3Text = selectedMethod === 'METODE_1' ? `${pentolSelisih} m/loss time` : `selisih ${formatSelisihQty(pentolSelisihQty)} loyang (${formatSelisih(-pentolSelisihVal)} menit)`;
+        const lumpiaRow3Text = selectedMethod === 'METODE_1' ? `${lumpiaSelisih} m/loss time` : `selisih ${formatSelisihQty(lumpiaSelisihQty)} keranjang (${formatSelisih(-lumpiaSelisihVal)} menit)`;
+        const adonanRow3Text = selectedMethod === 'METODE_1' ? `${adonanSelisih} m/loss time` : `selisih ${formatSelisihQty(adonanSelisihQty)} solid (${formatSelisih(-adonanSelisihVal)} menit)`;
 
         // Define PrimeReact ColumnGroup Header
         const headerGroup = (
