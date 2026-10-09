@@ -359,6 +359,9 @@ class RefrezingController extends Controller
             'adonan_pangsit' => 18.9,
         ];
 
+        [$fH, $fM] = explode(':', $fromTime);
+        $shiftStartMins = (int)$fH * 60 + (int)$fM;
+
         // Group details by machine for accurate machine timeline calculations
         $detailsByMachine = $shiftDetails->groupBy('machine');
 
@@ -376,11 +379,13 @@ class RefrezingController extends Controller
                 $baseInit = $productBaseMins[$pt] ?? 5.0;
 
                 if ($prevMachineTime === null) {
-                    // Entri paling pertama di mesin pada shift: Menggunakan kredit dasar produk (+5m Siomay/Pentol, +12m Lumpia, +18.9m Adonan)
-                    $gap = (float)$baseInit;
+                    // Entri paling pertama di mesin pada shift: Dihitung dari shift awal masing-masing (cth: 08:00 ke 08:35 = 35m)
+                    $initDiff = $dMins >= $shiftStartMins ? ($dMins - $shiftStartMins) : ($dMins + 1440 - $shiftStartMins);
+                    $gap = (float)max(0, $initDiff);
                 } else {
                     // Ditarik langsung dari jam entri sebelumnya di mesin ke jam entri ini (cth: 09:11 ke 09:24 = 13m)
-                    $gap = (float)max(0, $dMins - $prevMachineTime);
+                    $nextDiff = $dMins >= $prevMachineTime ? ($dMins - $prevMachineTime) : ($dMins + 1440 - $prevMachineTime);
+                    $gap = (float)max(0, $nextDiff);
                     if ($gap > 90) {
                         $gap = (float)$baseInit;
                     }

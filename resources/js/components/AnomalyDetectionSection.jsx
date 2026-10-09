@@ -372,12 +372,46 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
             }
         }
 
+        // ── Active Metode 2 Target Product Quantities (Jumlah Produk Target yang Perlu Dicapai) ──
+        const active_ps_min    = activeRefTime === 80 ? m2_80_ps_min : m2_74_ps_min;
+        const active_ps_loyang = activeRefTime === 80 ? m2_80_ps_loyang : m2_74_ps_loyang;
+        const active_l_min     = activeRefTime === 80 ? m2_80_l_min : m2_74_l_min;
+        const active_a_min     = activeRefTime === 80 ? m2_80_a_min : m2_74_a_min;
+
+        const siomayTargetQty = active_ps_min > 0 ? (siomayMins / active_ps_min) * active_ps_loyang : 0;
+        const pentolTargetQty = active_ps_min > 0 ? (pentolMins / active_ps_min) * active_ps_loyang : 0;
+        const lumpiaTargetQty = active_l_min > 0 ? lumpiaMins / active_l_min : 0;
+        const adonanTargetQty = active_a_min > 0 ? adonanMins / active_a_min : 0;
+        const totalTargetQty  = siomayTargetQty + pentolTargetQty + lumpiaTargetQty + adonanTargetQty;
+
+        const totalActualQty  = siomayTotalLoyang + pentolTotalLoyang + lumpiaTotalKeranjang + adonanTotalSolid;
+
+        // Metode 2: Selisih Qty Produk (Actual Output - Target Real Resep)
+        const siomaySelisihQty = siomayTotalLoyang - siomayTargetQty;
+        const pentolSelisihQty = pentolTotalLoyang - pentolTargetQty;
+        const lumpiaSelisihQty = lumpiaTotalKeranjang - lumpiaTargetQty;
+        const adonanSelisihQty = adonanTotalSolid - adonanTargetQty;
+        const totalSelisihQty  = totalActualQty - totalTargetQty;
+
+        const formatQty = (val) => {
+            const num = Number(val);
+            if (isNaN(num)) return '0';
+            return Number.isInteger(num) ? num.toString() : num.toFixed(1);
+        };
+
+        const formatSelisihQty = (val) => {
+            const num = Number(val);
+            if (isNaN(num)) return '0';
+            const str = Number.isInteger(num) ? num.toString() : num.toFixed(1);
+            return num > 0 ? `+${str}` : str;
+        };
+
         const siomayResepMins = formatMins(siomayResepVal);
         const pentolResepMins = formatMins(pentolResepVal);
         const lumpiaResepMins = formatMins(lumpiaResepVal);
         const adonanResepMins = formatMins(adonanResepVal);
 
-        // Selisih = Jumlah Waktu (Input Aktif) - Waktu Resep
+        // Selisih = Jumlah Waktu (Input Aktif) - Waktu Resep (Metode 1)
         const siomaySelisihVal = siomayMins - siomayResepVal;
         const pentolSelisihVal = pentolMins - pentolResepVal;
         const lumpiaSelisihVal = lumpiaMins - lumpiaResepVal;
@@ -400,6 +434,21 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         const totalSelisihVal = siomaySelisihVal + pentolSelisihVal + lumpiaSelisihVal + adonanSelisihVal;
         const totalSelisih = formatSelisih(totalSelisihVal);
 
+        const durationLabel = selectedMethod === 'METODE_1' ? 'm/durasi input' : 'm/durasi berjalan';
+
+        // Header Row 2 & Row 3 Labels depending on selectedMethod
+        const totalRow2Text  = selectedMethod === 'METODE_1' ? `${totalResepMins} menit` : `${formatQty(totalTargetQty)} target`;
+        const siomayRow2Text = selectedMethod === 'METODE_1' ? `${siomayResepMins} m/real resep` : `${formatQty(siomayTargetQty)} L target resep`;
+        const pentolRow2Text = selectedMethod === 'METODE_1' ? `${pentolResepMins} m/real resep` : `${formatQty(pentolTargetQty)} L target resep`;
+        const lumpiaRow2Text = selectedMethod === 'METODE_1' ? `${lumpiaResepMins} m/real resep` : `${formatQty(lumpiaTargetQty)} K target resep`;
+        const adonanRow2Text = selectedMethod === 'METODE_1' ? `${adonanResepMins} m/real resep` : `${formatQty(adonanTargetQty)} S target resep`;
+
+        const totalRow3Text  = selectedMethod === 'METODE_1' ? `${totalSelisih} menit` : `${formatSelisihQty(totalSelisihQty)} selisih`;
+        const siomayRow3Text = selectedMethod === 'METODE_1' ? `${siomaySelisih} m/loss time` : `${formatSelisihQty(siomaySelisihQty)} L selisih`;
+        const pentolRow3Text = selectedMethod === 'METODE_1' ? `${pentolSelisih} m/loss time` : `${formatSelisihQty(pentolSelisihQty)} L selisih`;
+        const lumpiaRow3Text = selectedMethod === 'METODE_1' ? `${lumpiaSelisih} m/loss time` : `${formatSelisihQty(lumpiaSelisihQty)} K selisih`;
+        const adonanRow3Text = selectedMethod === 'METODE_1' ? `${adonanSelisih} m/loss time` : `${formatSelisihQty(adonanSelisihQty)} S selisih`;
+
         // Define PrimeReact ColumnGroup Header
         const headerGroup = (
             <ColumnGroup>
@@ -419,22 +468,22 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{siomayMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomayMins} {durationLabel}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{pentolMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{pentolMins} {durationLabel}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{lumpiaMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{lumpiaMins} {durationLabel}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{adonanMins} m/durasi input</span>
+                            <span className="text-[10px] font-black mt-0.5">{adonanMins} {durationLabel}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                     <Column rowSpan={4} header={
@@ -447,54 +496,54 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{totalResepMins} menit</span>
+                            <span className="text-[10px] font-black mt-0.5">{totalRow2Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{siomayResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomayRow2Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{pentolResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{pentolRow2Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{lumpiaResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{lumpiaRow2Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{adonanResepMins} m/real resep</span>
+                            <span className="text-[10px] font-black mt-0.5">{adonanRow2Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                 </Row>
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{totalSelisih} menit</span>
+                            <span className="text-[10px] font-black mt-0.5">{totalRow3Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{siomaySelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{siomayRow3Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{pentolSelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{pentolRow3Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{lumpiaSelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{lumpiaRow3Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            <span className="text-[10px] font-black mt-0.5">{adonanSelisih} m/loss time</span>
+                            <span className="text-[10px] font-black mt-0.5">{adonanRow3Text}</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                 </Row>
