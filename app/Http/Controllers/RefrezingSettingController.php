@@ -29,6 +29,18 @@ class RefrezingSettingController extends Controller
             'lumpia_multiplier'     => 'required|numeric|min:0.01',
             'adonan_multiplier'     => 'required|numeric|min:0.01',
             'adonan_divider_min'    => 'required|numeric|min:0.01',
+
+            // Validation for Metode 2
+            'metode2_active_refrezing_time' => 'required|in:74,80',
+            'm2_74_pentol_siomay_min'       => 'required|numeric|min:0.01',
+            'm2_74_pentol_siomay_loyang'    => 'required|numeric|min:0.01',
+            'm2_74_lumpia_min'              => 'required|numeric|min:0.01',
+            'm2_74_adonan_min'              => 'required|numeric|min:0.01',
+
+            'm2_80_pentol_siomay_min'       => 'required|numeric|min:0.01',
+            'm2_80_pentol_siomay_loyang'    => 'required|numeric|min:0.01',
+            'm2_80_lumpia_min'              => 'required|numeric|min:0.01',
+            'm2_80_adonan_min'              => 'required|numeric|min:0.01',
         ]);
 
         try {

@@ -70,6 +70,8 @@ function calcLiveElapsedMinutes(shift) {
 
 export default function AnomalyDetectionSection({ anomalyData, refrezingSettings, title = "Deteksi LossTime & Rekap Shift IQF", apiEndpoint = "/dashboard/stats" }) {
     const [selectedTab, setSelectedTab] = useState('ALL'); // 'ALL', 'IQF 1', 'IQF 2'
+    const [selectedMethod, setSelectedMethod] = useState('METODE_2'); // 'METODE_2', 'METODE_1', 'KOMPARASI'
+    const [selectedRefTime, setSelectedRefTime] = useState(null); // null (use db default), 74, 80
     const [printingMachine, setPrintingMachine] = useState(null); // null, 'IQF 1', 'IQF 2'
 
     // ── Filter Histori ──
@@ -294,6 +296,11 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         const st = refrezingSettings || effectiveData?.refrezing_settings || {};
         const getVal = (val, fallback) => (val !== undefined && val !== null && val !== '') ? Number(val) : fallback;
 
+        // Active Refrezing Time for Metode 2
+        const defaultRefTime = getVal(st.metode2_active_refrezing_time, 74);
+        const activeRefTime  = selectedRefTime || defaultRefTime;
+
+        // ── Metode 1 Params ──
         const s_mult  = getVal(st.siomay_multiplier, 290);
         const s_div_l = getVal(st.siomay_divider_loyang, 22);
         const s_div_m = getVal(st.siomay_divider_min, 60);
@@ -307,10 +314,63 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         const a_mult  = getVal(st.adonan_multiplier, 71);
         const a_div_m = getVal(st.adonan_divider_min, 60);
 
-        const siomayResepVal = (siomayTotalLoyang * (s_mult / s_div_l)) / s_div_m;
-        const pentolResepVal = (pentolTotalLoyang * (p_mult / p_div_l)) / p_div_m;
-        const lumpiaResepVal = lumpiaTotalKeranjang * l_mult;
-        const adonanResepVal = (adonanTotalSolid * a_mult) / a_div_m;
+        // ── Metode 2 Params (74 & 80) ──
+        const m2_74_ps_min    = getVal(st.m2_74_pentol_siomay_min, 4.0);
+        const m2_74_ps_loyang = getVal(st.m2_74_pentol_siomay_loyang, 22.0);
+        const m2_74_l_min     = getVal(st.m2_74_lumpia_min, 1.25);
+        const m2_74_a_min     = getVal(st.m2_74_adonan_min, 1.25);
+
+        const m2_80_ps_min    = getVal(st.m2_80_pentol_siomay_min, 5.0);
+        const m2_80_ps_loyang = getVal(st.m2_80_pentol_siomay_loyang, 22.0);
+        const m2_80_l_min     = getVal(st.m2_80_lumpia_min, 1.5);
+        const m2_80_a_min     = getVal(st.m2_80_adonan_min, 1.5);
+
+        // Calculate Resep Values per Method:
+        // 1. Metode 1
+        const siomayResepM1 = (siomayTotalLoyang * (s_mult / s_div_l)) / s_div_m;
+        const pentolResepM1 = (pentolTotalLoyang * (p_mult / p_div_l)) / p_div_m;
+        const lumpiaResepM1 = lumpiaTotalKeranjang * l_mult;
+        const adonanResepM1 = (adonanTotalSolid * a_mult) / a_div_m;
+        const totalResepValM1 = siomayResepM1 + pentolResepM1 + lumpiaResepM1 + adonanResepM1;
+
+        // 2. Metode 2 (74)
+        const siomayResepM2_74 = (siomayTotalLoyang / m2_74_ps_loyang) * m2_74_ps_min;
+        const pentolResepM2_74 = (pentolTotalLoyang / m2_74_ps_loyang) * m2_74_ps_min;
+        const lumpiaResepM2_74 = lumpiaTotalKeranjang * m2_74_l_min;
+        const adonanResepM2_74 = adonanTotalSolid * m2_74_a_min;
+        const totalResepValM2_74 = siomayResepM2_74 + pentolResepM2_74 + lumpiaResepM2_74 + adonanResepM2_74;
+
+        // 3. Metode 2 (80)
+        const siomayResepM2_80 = (siomayTotalLoyang / m2_80_ps_loyang) * m2_80_ps_min;
+        const pentolResepM2_80 = (pentolTotalLoyang / m2_80_ps_loyang) * m2_80_ps_min;
+        const lumpiaResepM2_80 = lumpiaTotalKeranjang * m2_80_l_min;
+        const adonanResepM2_80 = adonanTotalSolid * m2_80_a_min;
+        const totalResepValM2_80 = siomayResepM2_80 + pentolResepM2_80 + lumpiaResepM2_80 + adonanResepM2_80;
+
+        // Choose Active Resep Values
+        let siomayResepVal, pentolResepVal, lumpiaResepVal, adonanResepVal, totalResepVal;
+
+        if (selectedMethod === 'METODE_1') {
+            siomayResepVal = siomayResepM1;
+            pentolResepVal = pentolResepM1;
+            lumpiaResepVal = lumpiaResepM1;
+            adonanResepVal = adonanResepM1;
+            totalResepVal  = totalResepValM1;
+        } else { // METODE_2 or KOMPARASI
+            if (activeRefTime === 80) {
+                siomayResepVal = siomayResepM2_80;
+                pentolResepVal = pentolResepM2_80;
+                lumpiaResepVal = lumpiaResepM2_80;
+                adonanResepVal = adonanResepM2_80;
+                totalResepVal  = totalResepValM2_80;
+            } else {
+                siomayResepVal = siomayResepM2_74;
+                pentolResepVal = pentolResepM2_74;
+                lumpiaResepVal = lumpiaResepM2_74;
+                adonanResepVal = adonanResepM2_74;
+                totalResepVal  = totalResepValM2_74;
+            }
+        }
 
         const siomayResepMins = formatMins(siomayResepVal);
         const pentolResepMins = formatMins(pentolResepVal);
@@ -336,7 +396,6 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
         const adonanSelisih = formatSelisih(adonanSelisihVal);
 
         const totalDimsumMins = siomayMins + pentolMins + lumpiaMins + adonanMins;
-        const totalResepVal = siomayResepVal + pentolResepVal + lumpiaResepVal + adonanResepVal;
         const totalResepMins = formatMins(totalResepVal);
         const totalSelisihVal = siomaySelisihVal + pentolSelisihVal + lumpiaSelisihVal + adonanSelisihVal;
         const totalSelisih = formatSelisih(totalSelisihVal);
@@ -355,37 +414,31 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL MENIT</span> */}
                             <span className="text-[10px] font-black mt-0.5">{totalDimsumMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
                             <span className="text-[10px] font-black mt-0.5">{siomayMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
                             <span className="text-[10px] font-black mt-0.5">{pentolMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
                             <span className="text-[10px] font-black mt-0.5">{lumpiaMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
                             <span className="text-[10px] font-black mt-0.5">{adonanMins} m/durasi input</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
                     <Column rowSpan={4} header={
                         <div className="flex flex-col items-center justify-center leading-tight py-1">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JLH MENIT</span> */}
                             <span className="text-[10px] font-black mt-1">{downtime_minutes} menit</span>
                             <span className="text-[10px] font-semibold mt-0.5">({sortedDowntime.length} kendala)</span>
                         </div>
@@ -394,31 +447,26 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">WAKTU RESEP</span> */}
                             <span className="text-[10px] font-black mt-0.5">{totalResepMins} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(LOYANG X 13.2)/60</span> */}
                             <span className="text-[10px] font-black mt-0.5">{siomayResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(LOYANG X 13.2)/60</span> */}
                             <span className="text-[10px] font-black mt-0.5">{pentolResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(KERANJANG X 1.5)</span> */}
                             <span className="text-[10px] font-black mt-0.5">{lumpiaResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[9px] uppercase font-bold tracking-tight opacity-80">(SOLID X 71)</span> */}
                             <span className="text-[10px] font-black mt-0.5">{adonanResepMins} m/real resep</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
@@ -426,31 +474,26 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
                 <Row>
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-extrabold tracking-tight">TOTAL SELISIH</span> */}
                             <span className="text-[10px] font-black mt-0.5">{totalSelisih} menit</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#f1f5f9', color: '#334155', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
                             <span className="text-[10px] font-black mt-0.5">{siomaySelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
                             <span className="text-[10px] font-black mt-0.5">{pentolSelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ffe4e6', color: '#be123c', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
                             <span className="text-[10px] font-black mt-0.5">{lumpiaSelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#ecfeff', color: '#0891b2', fontWeight: '900', textAlign: 'center' }} />
                     <Column header={
                         <div className="flex flex-col items-center justify-center leading-tight py-0.5">
-                            {/* <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">JUMLAH SELISIH</span> */}
                             <span className="text-[10px] font-black mt-0.5">{adonanSelisih} m/loss time</span>
                         </div>
                     } headerStyle={{ backgroundColor: '#fdf4ff', color: '#a21caf', fontWeight: '900', textAlign: 'center' }} />
@@ -588,6 +631,51 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
                 </div>
 
                 <div className="p-5 space-y-4 web-card-body">
+                    {/* KOMPARASI METODE 1 VS METODE 2 PANEL */}
+                    {selectedMethod === 'KOMPARASI' && (
+                        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-4 shadow-md border border-slate-700/80 space-y-3">
+                            <div className="flex items-center justify-between border-b border-slate-700/80 pb-2">
+                                <div className="flex items-center gap-2">
+                                    <Activity className="w-4 h-4 text-amber-400" />
+                                    <h5 className="text-xs font-black uppercase tracking-wider text-amber-300 m-0">
+                                        📊 Perbandingan Efektivitas Metode (IQF Shift Berjalan: {elapsed_shift_minutes}m)
+                                    </h5>
+                                </div>
+                                <span className="text-[10px] font-bold text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-700">
+                                    Evaluasi Metode Paling Efektif
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                {/* METODE 1 */}
+                                <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 space-y-1">
+                                    <div className="text-[11px] font-black text-slate-300">1. Metode 1 (Standard)</div>
+                                    <div className="text-xs font-bold text-cyan-300">Waktu Resep: {formatMins(totalResepValM1)} m</div>
+                                    <div className="text-xs font-bold text-rose-300">Loss Time: {formatMins(Math.max(0, elapsed_shift_minutes - totalResepValM1 - downtime_minutes))} m</div>
+                                </div>
+
+                                {/* METODE 2 (74) */}
+                                <div className={`p-3 rounded-xl border space-y-1 ${activeRefTime === 74 ? 'bg-sky-900/60 border-sky-400' : 'bg-slate-800/80 border-slate-700'}`}>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-black text-sky-200">2. Metode 2 (Refrezing 74)</span>
+                                        {activeRefTime === 74 && <span className="text-[9px] font-extrabold bg-sky-500 text-white px-1.5 py-0.2 rounded">AKTIF</span>}
+                                    </div>
+                                    <div className="text-xs font-bold text-sky-300">Waktu Resep: {formatMins(totalResepValM2_74)} m</div>
+                                    <div className="text-xs font-bold text-amber-300">Loss Time: {formatMins(Math.max(0, elapsed_shift_minutes - totalResepValM2_74 - downtime_minutes))} m</div>
+                                </div>
+
+                                {/* METODE 2 (80) */}
+                                <div className={`p-3 rounded-xl border space-y-1 ${activeRefTime === 80 ? 'bg-amber-900/60 border-amber-400' : 'bg-slate-800/80 border-slate-700'}`}>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-black text-amber-200">3. Metode 2 (Refrezing 80)</span>
+                                        {activeRefTime === 80 && <span className="text-[9px] font-extrabold bg-amber-500 text-white px-1.5 py-0.2 rounded">AKTIF</span>}
+                                    </div>
+                                    <div className="text-xs font-bold text-amber-300">Waktu Resep: {formatMins(totalResepValM2_80)} m</div>
+                                    <div className="text-xs font-bold text-amber-200">Loss Time: {formatMins(Math.max(0, elapsed_shift_minutes - totalResepValM2_80 - downtime_minutes))} m</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {/* Status Alert Callout */}
                     {isAnomaly ? (
                         <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-start gap-3 web-anomaly-alert">
@@ -875,6 +963,80 @@ export default function AnomalyDetectionSection({ anomalyData, refrezingSettings
                                 ))}
                             </div>
                         </div>
+                    </div>
+
+                    {/* ── Baris Switcher Metode & Refrezing Time ── */}
+                    <div className="no-print-anomaly px-5 py-3 bg-gradient-to-r from-sky-50 via-cyan-50 to-teal-50 border-t border-slate-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-[11px] font-black text-slate-700 uppercase tracking-wide mr-1">Metode Evaluasi:</span>
+
+                            <button
+                                type="button"
+                                onClick={() => setSelectedMethod('METODE_2')}
+                                className={`px-3.5 py-1.5 text-xs font-black rounded-full transition-all border cursor-pointer ${
+                                    selectedMethod === 'METODE_2'
+                                        ? 'bg-[#0284c7] text-white border-[#0284c7] shadow-xs'
+                                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                            >
+                                ⚡ Metode 2 (Real Resep)
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setSelectedMethod('METODE_1')}
+                                className={`px-3.5 py-1.5 text-xs font-black rounded-full transition-all border cursor-pointer ${
+                                    selectedMethod === 'METODE_1'
+                                        ? 'bg-[#0284c7] text-white border-[#0284c7] shadow-xs'
+                                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                            >
+                                🧮 Metode 1 (Standard)
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setSelectedMethod('KOMPARASI')}
+                                className={`px-3.5 py-1.5 text-xs font-black rounded-full transition-all border cursor-pointer ${
+                                    selectedMethod === 'KOMPARASI'
+                                        ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                                        : 'bg-white text-amber-800 border-amber-200 hover:bg-amber-50'
+                                }`}
+                            >
+                                📊 Perbandingan (Metode 1 vs 2)
+                            </button>
+                        </div>
+
+                        {/* Refrezing Time Pill Selector (74 vs 80) */}
+                        {selectedMethod !== 'METODE_1' && (
+                            <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full border border-amber-200 shadow-2xs">
+                                <span className="text-[10px] font-black text-amber-900 uppercase">Acuan Refrezing Time:</span>
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedRefTime(74)}
+                                        className={`px-2.5 py-0.5 text-[11px] font-black rounded-full transition-all border-0 cursor-pointer ${
+                                            (selectedRefTime || refrezingSettings?.metode2_active_refrezing_time || 74) === 74
+                                                ? 'bg-amber-500 text-white shadow-2xs'
+                                                : 'text-slate-600 hover:bg-amber-100'
+                                        }`}
+                                    >
+                                        74 m
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedRefTime(80)}
+                                        className={`px-2.5 py-0.5 text-[11px] font-black rounded-full transition-all border-0 cursor-pointer ${
+                                            (selectedRefTime || refrezingSettings?.metode2_active_refrezing_time || 74) === 80
+                                                ? 'bg-amber-500 text-white shadow-2xs'
+                                                : 'text-slate-600 hover:bg-amber-100'
+                                        }`}
+                                    >
+                                        80 m
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* ── Baris Filter Histori (Tanggal, Shift) ── */}
